@@ -1,31 +1,46 @@
-#include <stdio.h>
-#include "pthread.h"
+#include "cabecera.h"
 #include "registros.h"
 #include "memoriaPrincipal.h"
 
 int word, opcode, dir, val;
 
+palabra lectura(int pos, int *flag){
+	MEM_LOCK;
+	palabra leido;
+	*flag = pmrd(pos, &leido, PSW, RB, RL);
+	MEM_UNLOCK;
+	return leido;
+}
 
-void instruccion (int word){
+void escritura(int pos, const palabra value, int *flag){
+	MEM_LOCK;
+	*flag = pmwr(pos, value, PSW, RB, RL);
+	MEM_UNLOCK;
+}
+
+void instruccion (palabra word){
 	val = word % 100000;
 	opcode = word / 1000000;
 	dir = (word / 100000) % 10;
 
 	int aux = PSW % 10000000;
 
+	int flagLectura;
 	switch (opcode){
 		case 00: // SUM
 			if(dir==0){
-				pthread_mutex_lock(&acceso_memoria);
-				AC = AC + lectura(val);
-				pthread_mutex_unlock(&acceso_memoria);
+				
+				AC = AC + lectura(val, &flagLectura);
+				
 			}
 			if(dir==1) AC = AC + val;
 			if(dir==2){
-				pthread_mutex_lock(&acceso_memoria);
-				 AC = AC + lectura(AC+val);
-				pthread_mutex_unlock(&acceso_memoria);
+				
+
+				AC = AC + lectura(AC + val, &flagLectura);
+				
 			}
+
 			if (AC==0) PSW = aux;
 			if (AC<0) PSW = (1*10000000) + aux;
 			if (AC>0) PSW = (2*10000000) + aux;
@@ -33,15 +48,15 @@ void instruccion (int word){
 			break;
 		case 01: // RES
 			if(dir==0){
-				pthread_mutex_lock(&acceso_memoria);
+				MEM_LOCK;
 				AC = AC - lectura(val);
-				pthread_mutex_unlock(&acceso_memoria);
+				MEM_UNLOCK;
 			}
 			if(dir==1) AC = AC - val;
 			if(dir==2){
-				pthread_mutex_lock(&acceso_memoria);
+				MEM_LOCK;
 				 AC = AC - lectura(AC+val);
-				pthread_mutex_unlock(&acceso_memoria);
+				MEM_UNLOCK;
 			}
 			if (AC==0) PSW = aux;
 			if (AC<0) PSW = (1*10000000) + aux;
@@ -50,15 +65,15 @@ void instruccion (int word){
 			break;
 		case 02: // MULT
 			if(dir==0){
-				pthread_mutex_lock(&acceso_memoria);
+				MEM_LOCK;
 				AC = AC * lectura(val);;
-				pthread_mutex_unlock(&acceso_memoria);
+				MEM_UNLOCK;
 			}
 			if(dir==1) AC = AC * val;
 			if(dir==2){
-				pthread_mutex_lock(&acceso_memoria);
+				MEM_LOCK;
 				 AC = AC * lectura(AC+val);
-				pthread_mutex_unlock(&acceso_memoria);
+				MEM_UNLOCK;
 			}
 			if (AC==0) PSW = aux;
 			if (AC<0) PSW = (1*10000000) + aux;
@@ -67,15 +82,15 @@ void instruccion (int word){
 			break;
 		case 03: // DIVI
 			if(dir==0){
-				pthread_mutex_lock(&acceso_memoria);
+				MEM_LOCK;
 				AC = AC / lectura(val);;
-				pthread_mutex_unlock(&acceso_memoria);
+				MEM_UNLOCK;
 			}
 			if(dir==1) AC = AC / val;
 			if(dir==2){
-				pthread_mutex_lock(&acceso_memoria);
+				MEM_LOCK;
 				AC = AC / lectura(AC+val);
-				pthread_mutex_unlock(&acceso_memoria);
+				MEM_UNLOCK;
 			}
 			if (AC==0) PSW = aux;
 			if (AC<0) PSW = (1*10000000) + aux;
@@ -84,29 +99,29 @@ void instruccion (int word){
 			break;	
 		case 04: // LOAD
 			if (dir==0){
-				pthread_mutex_lock(&acceso_memoria);
+				MEM_LOCK;
 				AC = lectura(val);
-				pthread_mutex_unlock(&acceso_memoria);				
+				MEM_UNLOCK;				
 			}
 			ìf (dir==1){
 				AC = val
 			}
 			if (dir==2){
-				pthread_mutex_lock(&acceso_memoria);
+				MEM_LOCK;
 				AC = lectura(AC+val);
-				pthread_mutex_unlock(&acceso_memoria);				
+				MEM_UNLOCK;				
 			}
 			break;	
 		case 05: // STR
 			if (dir==0){
-				pthread_mutex_lock(&acceso_memoria);
+				MEM_LOCK;
 				escritura(val, AC);
-				pthread_mutex_unlock(&acceso_memoria);				
+				MEM_UNLOCK;				
 			}
 			if (dir==2){
-				pthread_mutex_lock(&acceso_memoria);
+				MEM_LOCK;
 				escritura(AC+val, AC);
-				pthread_mutex_unlock(&acceso_memoria);				
+				MEM_UNLOCK;				
 			}
 			break;	
 		case 06: // LOADRX
@@ -121,45 +136,45 @@ void instruccion (int word){
 			if (AC>val) PSW = (2*10000000) + aux;
 			break;
 		case 09: // JMPE
-			pthread_mutex_lock(&acceso_memoria);
+			MEM_LOCK;
 			if (dir==0){
 				if (AC==lectura(SP)) PC = lectura(val);	
 			}
 			if (dir==2){
 				if (AC==lectura(SP)) PC = lectura(val);
 			}
-			pthread_mutex_unlock(&acceso_memoria);	
+			MEM_UNLOCK;	
 			break;	
 		case 10: // JMPNE
-			pthread_mutex_lock(&acceso_memoria);
+			MEM_LOCK;
 			if (dir==0){
 				if (AC!=lectura(SP)) PC = lectura(val);		
 			}
 			if (dir=2){
 				if (AC!=lectura(SP)) PC = lectura(val);
 			}
-			pthread_mutex_unlock(&acceso_memoria);	
+			MEM_UNLOCK;	
 			break;	
 		case 11: // JMPLT
-			pthread_mutex_lock(&acceso_memoria);
+			MEM_LOCK;
 			if (dir==0){
 				if (AC<lectura(SP)) PC = lectura(val);		
 			}
 			if (dir=2){
 				if (AC<lectura(SP)) PC = lectura(val);
 			}
-			pthread_mutex_unlock(&acceso_memoria);	
+			MEM_UNLOCK;	
 			break;	
 			break;	
 		case 12: // JMPGT
-			pthread_mutex_lock(&acceso_memoria);
+			MEM_LOCK;
 			if (dir==0){
 				if (AC>lectura(SP)) PC = lectura(val);		
 			}
 			if (dir=2){
 				if (AC>lectura(SP)) PC = lectura(val);
 			}
-			pthread_mutex_unlock(&acceso_memoria);	
+			MEM_UNLOCK;	
 			break;			
 			break;	
 		case 13:

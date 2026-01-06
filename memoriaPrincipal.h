@@ -1,37 +1,18 @@
 #ifndef memoria_principal
 #define memoria_principal
-#include "pthread.h"
-#include "registros.h"
+
+#include "cabecera.h"
+
+
 pthread_mutex_t acceso_memoria;
-int ram[2000];
 
-int lectura(int pos){
-    if(pos <= 300){
-        if((PSW/100000)%10 == 1){
-            return ram[pos];
-        }
-        else{
-            return -1;
-        }
-    }
-    else{
-        return ram[pos];
-    }
-    
-}
+#define MEM_LOCK pthread_mutex_lock(&acceso_memoria)
+#define MEM_UNLOCK pthread_mutex_unlock(&acceso_memoria)
 
-bool escritura(int pos, int value){
-    if(pos <= 300){
-        if((PSW/100000)%10 == 1){
-            ram[pos] = value;
-            return true;
-        }
-        else return false;
-    }
-    else{
-        ram[pos] = value;
-        return true;
-    }
-}
+palabra ram[2000];
+
+int pmrd(int pos, palabra* value, const int PSW, const int RB, const int RL);
+
+int pmwr(int pos, palabra value, const int PSW, const int RB, const int RL);
 
 #endif

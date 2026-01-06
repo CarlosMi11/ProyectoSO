@@ -1,6 +1,7 @@
 #ifndef registros
 #define registros
 
+
 int MAR;
 int MDR;
 int IR;
