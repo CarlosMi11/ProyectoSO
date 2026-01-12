@@ -1,11 +1,14 @@
 #include "memoriaPrincipal.h"
 
+
+palabra ram[2000];
+pthread_mutex_t acceso_memoria = PTHREAD_MUTEX_INITIALIZER;
+
+
 int pmrd(int pos, palabra* value, const int PSW, const int RB, const int RL){
-    if(pos <= 300 && (PSW/100000)%10 != 1){
-        return FAIL;
-    }
     
-    else if(pos < RB || pos >= RL){
+    
+    if((pos < RB || pos >= RL || pos <= 300) && (PSW/1000000)%10 != 1){
         return FAIL;
     }
     
@@ -15,11 +18,7 @@ int pmrd(int pos, palabra* value, const int PSW, const int RB, const int RL){
 }
 
 int pmwr(int pos, palabra value, const int PSW, const int RB, const int RL){
-    if(pos <= 300 && (PSW/100000)%10 != 1){
-        return FAIL;
-    }
-    
-    else if(pos < RB || pos >= RL){
+    if((pos < RB || pos >= RL || pos <= 300) && (PSW/1000000)%10 != 1){
         return FAIL;
     }
     

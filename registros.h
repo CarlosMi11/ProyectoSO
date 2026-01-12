@@ -1,16 +1,16 @@
-#ifndef registros
-#define registros
+#ifndef REGISTROS
+#define REGISTROS
 
 
-int MAR;
-int MDR;
-int IR;
-int RB;
-int RL;
-int RX;
-int SP;
-int PSW;
+extern int MAR;
+extern int MDR;
+extern int IR;
+extern int RB;
+extern int RL;
+extern int RX;
+extern int SP;
+extern int PSW;
 
-int AC;
+extern int AC;
 
 #endif
