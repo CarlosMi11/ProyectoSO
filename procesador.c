@@ -2,6 +2,7 @@
 #include "procesador.h"
 #include "procesador_aux.c"
 #include "DMA.h"
+#include "reloj.h"
 
 int MAR = 0;
 int MDR = 0;
@@ -13,10 +14,7 @@ int SP = 0;
 int PSW = 0;
 int AC = 0;
 
-void * procesador(void* parametros){
 
-    return NULL;
-}
 
 palabra lectura(int pos, int *flag){
 	MEM_LOCK;
@@ -49,12 +47,13 @@ void fetch(){
 Instruccion decode(){
 	Instruccion i;
 	i.val = IR % 100000;
+	if ((i.val/10000)==1) i.val = (i.val%10000)*(-1);
 	i.opcode = IR / 1000000;
 	i.dir = (IR / 100000) % 10;
 	return i;
 }
 
-flag accesoMemoria(Instruccion *i){
+flag MemoryAccess(Instruccion *i){
     int valor = 0;
     flag flagLectura = SUCCESS;
 
@@ -63,24 +62,18 @@ flag accesoMemoria(Instruccion *i){
 		valor = lectura(i->val, &flagLectura);
 	}
 	if(i->dir==1){
-		if ((i->val/10000)==1) valor = (i->val%10000)*(-1);
-
-		else valor = i->val;
+		valor = i->val;
 	}
 	if(i->dir==2){
 		valor = lectura((i->val + AC), &flagLectura);
 	}
-    
-    if(flagLectura == FAIL){
-        //COLOCAR INTERRUPCION
-    }
 
     i->val = valor;
 
     return flagLectura;
 }
 
-void execute (Instruccion i){
+flag execute (Instruccion i){
 	
 	
 	int opcode, val, dir;
@@ -88,7 +81,8 @@ void execute (Instruccion i){
     val = i.val;
     dir = i.dir;
 
-	flag flagMemoria;
+	flag flagMemoria = SUCCESS;
+	flag flagInstruccion = SUCCESS;
 
 	switch (opcode){
 		case 0: // SUM
@@ -147,8 +141,8 @@ void execute (Instruccion i){
             if (val == 0) {
                 
                 log("CPU", "Error: Division por cero");
-                
-                return;
+				flagInstruccion = FAIL;
+				break;
             }
         
            
@@ -161,46 +155,48 @@ void execute (Instruccion i){
 			break;	
 
 		case 4: // LOAD
-			AC=val;
+			AC = lectura(val, &flagMemoria);
 			break;	
 		case 5: // STR
-			
-			if (dir==0){
-				
-				escritura(val, AC, &flagMemoria);
-				
-			}
-			else if (dir==2){
-				escritura(AC+val, AC, &flagMemoria);			
-			}
-            else if(dir == 1){
-                //INTERRUPCION INSTRUCCION INVALIDA
-            }
+			escritura(val, AC, &flagMemoria);
 			break;	
 		case 6: // LOADRX
-			AC = lectura(RX, &flagMemoria);
-			break;	
-		case 7: // STRRX
-			escritura(RX, AC, &flagMemoria);
-			break;	
+            AC = RX;
+            break;  
+        case 7: // STRRX
+            RX = AC; 
+            break;	
 		case 8: // COMP
 			if (AC==val) setCondCode(0);
 			if (AC<val)  setCondCode(1);
 			if (AC>val)  setCondCode(2);
 			break;
 		case 9: // JMPE			
-			if (AC == lectura(SP, &flagMemoria)) setPC(val);	
-			break;	
+			palabra valsp = lectura(SP, &flagMemoria);
+            if(flagMemoria == SUCCESS){
+                if (AC == valsp) setPC(val);
+            }
+			break;
 		case 10: // JMPNE
-			if (AC != lectura(SP, &flagMemoria)) setPC(val);	
-			break;	
+			palabra valsp = lectura(SP, &flagMemoria);
+            if(flagMemoria == SUCCESS){
+                if (AC != valsp) setPC(val);
+            }
+			break;
 		case 11: // JMPLT
-			if (AC < lectura(SP, &flagMemoria))  setPC(val);
+			palabra valsp = lectura(SP, &flagMemoria);
+            if(flagMemoria == SUCCESS){
+                if (AC < valsp) setPC(val);
+            }
 			break;	
 		case 12: // JMPGT
-			if (AC > lectura(SP, &flagMemoria))  setPC(val);
-			break;			
+			palabra valsp = lectura(SP, &flagMemoria);
+            if(flagMemoria == SUCCESS){
+                if (AC > valsp) setPC(val);
+            }
+			break;		
 		case 13: // SVC
+			genInterr(2);
 			break;	
 		case 14: // RETRN
             //asumo que en SP esta la direccion a donde se debe retornar
@@ -213,41 +209,43 @@ void execute (Instruccion i){
             setInterruptions(0);
 			break;	
 		case 17: //TTI
-            
-
+			flagMemoria = setReloj(val);
 			break;	
 		case 18: // CHMOD
-            if(val != 0 || val != 1){
-                //INTERRUPCION INSTRUCCION INVALIDA
+            if(val != 0 && val != 1){
+
+                
+				flagInstruccion = FAIL;
+				break;
                 
             }
             setOpMode(val);
 			break;																				
 		case 19: // LOADRB: cargar RB en AC
-			AC = lectura(RB, &flagMemoria);
+			AC = RB;
 			break;	
 		case 20: // STRRB
-			escritura(RB, AC, &flagMemoria);
+			RB = AC;
 			break;	
 		case 21: // LOADRL
-			AC = lectura(RL, &flagMemoria);
+			AC = RL;
 			break;	
 		case 22: // STRRL
-			escritura(RB, RL, &flagMemoria);
+			RL = AC;
 			break;	
 		case 23: // LOADSP
-			AC = lectura(SP, &flagMemoria);
+			AC = SP;
 			break;	
 		case 24: // STRSP
-			escritura(RB, SP, &flagMemoria);
+			SP = AC;
 			break;	
 		case 25: //PSH
-            RX+=1;
-            escritura(RX, AC, &flagMemoria);
+            SP+=1;
+            escritura(SP, AC, &flagMemoria);
 			break;	
 		case 26: //POP
-            AC = lectura(RX, &flagMemoria);
-            RX-=1;
+            AC = lectura(SP, &flagMemoria);
+            SP -= 1;
 			break;	
 		case 27: // J
 			setPC(val);
@@ -270,6 +268,63 @@ void execute (Instruccion i){
 		case 33: //SDMAON
             DMAON();
 			break;																		
-
+		default:
+			flagInstruccion = FAIL;
+			break;
 	}
+
+	flag ret = SUCCESS;
+	if(flagInstruccion == FAIL){
+		genInterr(5);
+		ret = FAIL;
+	}
+	if(flagMemoria == FAIL){
+		genInterr(6);
+		ret = FAIL;
+	}
+
+	return ret;
+	
+}
+
+void * procesador(void* parametros){
+
+    while(1) {
+        
+        
+        if (interrupcion() && getInterruptions()) {
+            manInterr(); 
+            continue; 
+        }
+
+        
+        fetch(); 
+		if(IR == -1){
+			//TERMINO EL PROGRAMA
+			break;
+		}
+
+		
+        Instruccion instr = decode();
+	
+		flag estado_memoria =  MemoryAccess(&instr);
+
+        if (estado_memoria == FAIL) {
+            
+            genInterr(6);
+            continue;
+        }
+
+        
+        execute(instr);
+
+        
+        tick(); 
+
+        
+        if (debugMode) {
+            
+        }
+    }
+    return NULL;
 }

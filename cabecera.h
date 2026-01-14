@@ -9,7 +9,7 @@
 typedef int palabra;
 typedef int flag;
 
-
+extern flag debugMode;
 #define SUCCESS 0
 #define FAIL 1
 

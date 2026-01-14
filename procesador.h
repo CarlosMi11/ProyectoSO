@@ -20,6 +20,6 @@ Instruccion decode(int IR);
 
 int accesoMemoria(Instruccion i);
 
-void execute (Instruccion i);
+flag execute (Instruccion i);
 
 #endif

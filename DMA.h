@@ -3,7 +3,9 @@
 
 #include "memoriaSecundaria.h"
 #include "memoriaPrincipal.h"
-#include "cabecera.h"
+#include "interrupciones.h"
+
+
 
 
 

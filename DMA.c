@@ -71,7 +71,7 @@ void* DMA(void *param){
         if(primemflag == SUCCESS && secmemflag == SUCCESS)ESTADOdma = SUCCESS;
         else ESTADOdma = FAIL;
 
-        //COLOCAR INTERRUPCION
+        genInterr(4);
 
         DMA_LOCK;
         dma_trabajando = 0;
