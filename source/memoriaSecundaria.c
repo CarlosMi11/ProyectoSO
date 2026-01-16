@@ -10,6 +10,6 @@ int scwr(palabra word, int pista, int cilindro, int sector){
 }
 
 int scrd(palabra *word, int pista, int cilindro, int sector){
-    word = atol(disco[pista][cilindro][sector]);
+    *word = atol(disco[pista][cilindro][sector]);
     return SUCCESS;
 }

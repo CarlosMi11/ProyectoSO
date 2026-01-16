@@ -16,5 +16,7 @@ extern FILE* LOG_F;
 
 
 
-flag log(char* componente, char* mensaje);
+flag log_(char* componente, char* mensaje);
+
+
 #endif

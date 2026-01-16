@@ -20,7 +20,7 @@ typedef struct{
 
 dma_data DMA_DATA;
 
-pthread_t ID_DMA;
+
 
 void* DMA(void *param){
     
@@ -89,39 +89,27 @@ void DMAON(){
     
 }
 
-void creardma() {
-    pthread_create(&ID_DMA, NULL, DMA, NULL);
-}
-
-void killdma(){
-    DMA_LOCK;
-    finalizar_dma = 1;
-    pthread_cond_signal(&senal_dma);
-    DMA_UNLOCK;
-    pthread_join(ID_DMA, NULL);
-}
-
-int set_pista(int pista){
+void set_pista(int pista){
     pthread_mutex_lock(&data_dma);
     DMA_DATA.pista = pista;
     pthread_mutex_unlock(&data_dma);
 }
-int set_cilindro(int cilindro){
+void set_cilindro(int cilindro){
     pthread_mutex_lock(&data_dma);
     DMA_DATA.cilindro = cilindro;
     pthread_mutex_unlock(&data_dma);
 }
-int set_sector(int sector){
+void set_sector(int sector){
     pthread_mutex_lock(&data_dma);
     DMA_DATA.sector = sector;
     pthread_mutex_unlock(&data_dma);
 }
-int set_posmem(int posmem){
+void set_posmem(int posmem){
     pthread_mutex_lock(&data_dma);
     DMA_DATA.posmem = posmem;
     pthread_mutex_unlock(&data_dma);
 }
-int set_io(int io){
+void set_io(int io){
     pthread_mutex_lock(&data_dma);
     DMA_DATA.io = io;
     pthread_mutex_unlock(&data_dma);

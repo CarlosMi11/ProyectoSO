@@ -24,10 +24,10 @@ void* DMA(void *param);
 void DMAON();
 void creardma();
 void killdma();
-int set_pista(int pista);
-int set_cilindro(int cilindro);
-int set_sector(int sector);
-int set_posmem(int posmem);
-int set_io(int io);
+void set_pista(int pista);
+void set_cilindro(int cilindro);
+void set_sector(int sector);
+void set_posmem(int posmem);
+void set_io(int io);
 
 #endif

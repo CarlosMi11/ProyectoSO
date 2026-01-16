@@ -1,4 +1,4 @@
-#include "registros.h"
+#include "procesador_aux.h"
 
 #define PC_SHIFT 100000
 
@@ -14,8 +14,8 @@ int getInterruptions(){
     return (PSW / PC_SHIFT) % 10;
 }
 
-int setInterruptions(int interr){
-    int pc = getPC;
+void setInterruptions(int interr){
+    int pc = getPC();
     int aux = PSW / PC_SHIFT;
     PSW = (((aux / 10) * 10) + interr) * PC_SHIFT + pc;
 }
@@ -41,7 +41,7 @@ int getOpMode() {
 void setOpMode(int modo) {
     int pc = getPC();
     int interr = getInterruptions();
-    int codCond = getCodigoCondicion();
+    int codCond = getCondCode();
 
     PSW = (codCond * 100 + modo * 10 + interr) * PC_SHIFT + pc;
 }

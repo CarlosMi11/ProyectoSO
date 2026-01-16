@@ -1,16 +1,16 @@
 #include "logger.h"
 
 FILE* LOG_F;
-pthread_mutex_t logmutex;
+pthread_mutex_t logmutex = PTHREAD_MUTEX_INITIALIZER;
 
-flag log(char* componente, char* mensaje){
+flag log_(char* componente, char* mensaje){
     if (mensaje == NULL || componente == NULL) return FAIL;
     
     pthread_t id = pthread_self();
 
     char mensajeFinal[TAMANO_MAX_LOG];
 
-    int n = snprintf(mensaje, TAMANO_MAX_LOG, "%s (%lu): %s \n", componente, (unsigned long)id, mensaje);
+    int n = snprintf(mensajeFinal, TAMANO_MAX_LOG, "[%s] Thread-%lu: %s\n", componente, (unsigned long)id, mensaje);
     if (n < 0 || n >= TAMANO_MAX_LOG) return FAIL;
 
     LOG_LOCK;

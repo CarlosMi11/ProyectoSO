@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 
-typedef int palabra;
+typedef long int palabra;
 typedef int flag;
 
 extern flag debugMode;
