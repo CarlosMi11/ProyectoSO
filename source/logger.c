@@ -1,7 +1,11 @@
 #include "logger.h"
 
-FILE* LOG_F;
-pthread_mutex_t logmutex = PTHREAD_MUTEX_INITIALIZER;
+static FILE* LOG_F;
+static pthread_mutex_t logmutex = PTHREAD_MUTEX_INITIALIZER;
+#define LOG_LOCK pthread_mutex_lock(&logmutex)
+#define LOG_UNLOCK pthread_mutex_unlock(&logmutex)
+
+#define DIRECCIONDELOG "LOG.log"
 
 flag log_(char* componente, char* mensaje){
     if (mensaje == NULL || componente == NULL) return FAIL;
@@ -27,4 +31,31 @@ flag log_(char* componente, char* mensaje){
     LOG_UNLOCK;
 
     return SUCCESS;
+}
+
+
+flag crearLogger(){
+    
+    LOG_F = fopen(DIRECCIONDELOG, "w");
+
+    if (LOG_F == NULL) {
+        
+        return FAIL;
+    }
+
+    
+    fprintf(LOG_F, "=== INICIO DEL LOG DEL SISTEMA ===\n");
+    fflush(LOG_F);
+
+    return SUCCESS;
+}
+
+void cerrarLogger() {
+    LOG_LOCK;
+    if (LOG_F != NULL) {
+        fprintf(LOG_F, "=== FIN DE SIMULACION ===\n");
+        fclose(LOG_F);
+        LOG_F = NULL;
+    }
+    LOG_UNLOCK;
 }

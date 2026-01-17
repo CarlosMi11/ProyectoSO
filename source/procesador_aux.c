@@ -10,6 +10,9 @@ void setPC(int pc){
     PSW = ((PSW / PC_SHIFT) * PC_SHIFT) + pc;
 }
 
+void jmp(int pos){
+    setPC(pos + RB);
+}
 int getInterruptions(){
     return (PSW / PC_SHIFT) % 10;
 }

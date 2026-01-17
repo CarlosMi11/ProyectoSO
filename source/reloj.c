@@ -1,7 +1,7 @@
 #include "reloj.h"
 
 
-int TIEMPO;
+static int TIEMPO;
 
 
 flag setReloj(int tiempo){
@@ -18,8 +18,9 @@ int getReloj(){
 
 void tick(){
     TIEMPO -= 1;
-    if(TIEMPO == 0){
+    if(TIEMPO <= 0){
         genInterr(3);
         TIEMPO = 12;
+        
     }
 }

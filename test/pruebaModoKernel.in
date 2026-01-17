@@ -1,0 +1,14 @@
+_start 1
+.NumeroPalabras 11
+.NombreProg KernelvsUser
+04100005 //1. load 5
+05100050 //2. escribir 5 en la direccion 50 (en modo usuario se usan direcciones manuales)
+00100005 //3. sum 5
+18100001 //4. cambiar a modo kernel
+05100050 //5. escribiendo 10 en la direccion 50 (en modo kernel se usan direcciones globales)
+18100000 //6. cambiar a modo usuario
+04000050 //7. leer la posicion 50 (deberia cargar 5)
+18100001 //8. cambiar a modo kernel
+04000050 //9. leer en la direccion 50 (deberia cargar 10)
+18100000 //10. cambiar a modo usuario
+01000050 //11. restamos lo escrito por el modo kernel a lo escrito por el modo usuario (10 - 5)

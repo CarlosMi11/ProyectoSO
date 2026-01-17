@@ -12,7 +12,7 @@ LDFLAGS := -pthread
 
 SRCDIR := source
 OBJDIR := objects
-SRCS := $(addprefix $(SRCDIR)/,DMA.c interrupciones.c logger.c main.c memoriaPrincipal.c memoriaSecundaria.c procesador_aux.c procesador.c reloj.c)
+SRCS := $(addprefix $(SRCDIR)/,DMA.c interrupciones.c logger.c main.c memoriaPrincipal.c memoriaSecundaria.c procesador_aux.c procesador.c reloj.c cargadorDePrograma.c)
 OBJS := $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SRCS))
 TARGET := so-sim
 

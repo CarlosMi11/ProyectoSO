@@ -1,4 +1,385 @@
 === INICIO DEL LOG DEL SISTEMA ===
-[manejadorInterrupciones] Thread-140123088422592: Llamada al sistema, codigo: 7
-[manejadorInterrupciones] Thread-140123088422592: Llamada al sistema, codigo: 7
+[procesador] Thread-140352695650112: CREANDO PROCESADOR
+[procesador] Thread-140352695650112: PROCESADOR CREADO
+[DMA] Thread-140352695650112: CREANDO DMA
+[procesador] Thread-140352695645888: DURMIENDO PROCESADOR
+[DMA] Thread-140352695650112: DMA CREADO
+[Cargador de Programa] Thread-140352695650112: empezando carga del programa
+[Cargador de Programa] Thread-140352695650112: Cargando en dirección 350
+[memoria principal] Thread-140352695650112: escritura exitosa en 351
+[memoria principal] Thread-140352695650112: escritura exitosa en 352
+[memoria principal] Thread-140352695650112: escritura exitosa en 353
+[memoria principal] Thread-140352695650112: escritura exitosa en 354
+[memoria principal] Thread-140352695650112: escritura exitosa en 355
+[memoria principal] Thread-140352695650112: escritura exitosa en 356
+[memoria principal] Thread-140352695650112: escritura exitosa en 357
+[memoria principal] Thread-140352695650112: escritura exitosa en 358
+[memoria principal] Thread-140352695650112: escritura exitosa en 359
+[memoria principal] Thread-140352695650112: escritura exitosa en 360
+[memoria principal] Thread-140352695650112: escritura exitosa en 361
+[memoria principal] Thread-140352695650112: escritura exitosa en 362
+[memoria principal] Thread-140352695650112: escritura exitosa en 363
+[memoria principal] Thread-140352695650112: escritura exitosa en 364
+[memoria principal] Thread-140352695650112: escritura exitosa en 365
+[memoria principal] Thread-140352695650112: escritura exitosa en 366
+[Cargador de Programa] Thread-140352695650112: Programa '2alatanto' cargado exitosamente
+[Cargador de Programa] Thread-140352695650112: Proceso: RB=350, RL=467, SP=17, RX=17, PSW=100351
+[Cargador de Programa] Thread-140352695650112: iniciando ejecución
+[procesador] Thread-140352695645888: DESPERTANDO PROCESADOR
+[procesador] Thread-140352695645888: INICIANDO PROCESADOR. modo de ejecución: NORMAL
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 351
+[procesador] Thread-140352695645888: FETCH: PC=352, MAR=351, MDR=4100005
+[procesador] Thread-140352695645888: decodificando IR=4100005
+[procesador] Thread-140352695645888: opcode=4, dir=1, valor=5
+[procesador] Thread-140352695645888: valor 5 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 4 con val=5
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 352
+[procesador] Thread-140352695645888: FETCH: PC=353, MAR=352, MDR=25000000
+[procesador] Thread-140352695645888: decodificando IR=25000000
+[procesador] Thread-140352695645888: opcode=25, dir=0, valor=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 350
+[procesador] Thread-140352695645888: valor 0 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 25 con val=0
+[memoria principal] Thread-140352695645888: escritura exitosa en 368
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 353
+[procesador] Thread-140352695645888: FETCH: PC=354, MAR=353, MDR=4100001
+[procesador] Thread-140352695645888: decodificando IR=4100001
+[procesador] Thread-140352695645888: opcode=4, dir=1, valor=1
+[procesador] Thread-140352695645888: valor 1 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 4 con val=1
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 354
+[procesador] Thread-140352695645888: FETCH: PC=355, MAR=354, MDR=5100050
+[procesador] Thread-140352695645888: decodificando IR=5100050
+[procesador] Thread-140352695645888: opcode=5, dir=1, valor=50
+[procesador] Thread-140352695645888: valor 50 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 5 con val=50
+[memoria principal] Thread-140352695645888: escritura exitosa en 400
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 355
+[procesador] Thread-140352695645888: FETCH: PC=356, MAR=355, MDR=4100000
+[procesador] Thread-140352695645888: decodificando IR=4100000
+[procesador] Thread-140352695645888: opcode=4, dir=1, valor=0
+[procesador] Thread-140352695645888: valor 0 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 4 con val=0
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 356
+[procesador] Thread-140352695645888: FETCH: PC=357, MAR=356, MDR=25000000
+[procesador] Thread-140352695645888: decodificando IR=25000000
+[procesador] Thread-140352695645888: opcode=25, dir=0, valor=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 350
+[procesador] Thread-140352695645888: valor 0 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 25 con val=0
+[memoria principal] Thread-140352695645888: escritura exitosa en 369
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 357
+[procesador] Thread-140352695645888: FETCH: PC=358, MAR=357, MDR=4000050
+[procesador] Thread-140352695645888: decodificando IR=4000050
+[procesador] Thread-140352695645888: opcode=4, dir=0, valor=50
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 400
+[procesador] Thread-140352695645888: valor 1 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 4 con val=1
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 358
+[procesador] Thread-140352695645888: FETCH: PC=359, MAR=358, MDR=2100002
+[procesador] Thread-140352695645888: decodificando IR=2100002
+[procesador] Thread-140352695645888: opcode=2, dir=1, valor=2
+[procesador] Thread-140352695645888: valor 2 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 2 con val=2
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 359
+[procesador] Thread-140352695645888: FETCH: PC=360, MAR=359, MDR=5100050
+[procesador] Thread-140352695645888: decodificando IR=5100050
+[procesador] Thread-140352695645888: opcode=5, dir=1, valor=50
+[procesador] Thread-140352695645888: valor 50 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 5 con val=50
+[memoria principal] Thread-140352695645888: escritura exitosa en 400
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 360
+[procesador] Thread-140352695645888: FETCH: PC=361, MAR=360, MDR=26000000
+[procesador] Thread-140352695645888: decodificando IR=26000000
+[procesador] Thread-140352695645888: opcode=26, dir=0, valor=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 350
+[procesador] Thread-140352695645888: valor 0 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 26 con val=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 369
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 361
+[procesador] Thread-140352695645888: FETCH: PC=362, MAR=361, MDR=100001
+[procesador] Thread-140352695645888: decodificando IR=100001
+[procesador] Thread-140352695645888: opcode=0, dir=1, valor=1
+[procesador] Thread-140352695645888: valor 1 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 0 con val=1
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 362
+[procesador] Thread-140352695645888: FETCH: PC=363, MAR=362, MDR=11100006
+[procesador] Thread-140352695645888: decodificando IR=11100006
+[procesador] Thread-140352695645888: opcode=11, dir=1, valor=6
+[procesador] Thread-140352695645888: valor 6 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 11 con val=6
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 368
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[manejadorInterrupciones] Thread-140352695645888: interrupcion de reloj
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 356
+[procesador] Thread-140352695645888: FETCH: PC=357, MAR=356, MDR=25000000
+[procesador] Thread-140352695645888: decodificando IR=25000000
+[procesador] Thread-140352695645888: opcode=25, dir=0, valor=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 350
+[procesador] Thread-140352695645888: valor 0 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 25 con val=0
+[memoria principal] Thread-140352695645888: escritura exitosa en 369
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 357
+[procesador] Thread-140352695645888: FETCH: PC=358, MAR=357, MDR=4000050
+[procesador] Thread-140352695645888: decodificando IR=4000050
+[procesador] Thread-140352695645888: opcode=4, dir=0, valor=50
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 400
+[procesador] Thread-140352695645888: valor 2 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 4 con val=2
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 358
+[procesador] Thread-140352695645888: FETCH: PC=359, MAR=358, MDR=2100002
+[procesador] Thread-140352695645888: decodificando IR=2100002
+[procesador] Thread-140352695645888: opcode=2, dir=1, valor=2
+[procesador] Thread-140352695645888: valor 2 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 2 con val=2
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 359
+[procesador] Thread-140352695645888: FETCH: PC=360, MAR=359, MDR=5100050
+[procesador] Thread-140352695645888: decodificando IR=5100050
+[procesador] Thread-140352695645888: opcode=5, dir=1, valor=50
+[procesador] Thread-140352695645888: valor 50 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 5 con val=50
+[memoria principal] Thread-140352695645888: escritura exitosa en 400
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 360
+[procesador] Thread-140352695645888: FETCH: PC=361, MAR=360, MDR=26000000
+[procesador] Thread-140352695645888: decodificando IR=26000000
+[procesador] Thread-140352695645888: opcode=26, dir=0, valor=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 350
+[procesador] Thread-140352695645888: valor 0 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 26 con val=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 369
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 361
+[procesador] Thread-140352695645888: FETCH: PC=362, MAR=361, MDR=100001
+[procesador] Thread-140352695645888: decodificando IR=100001
+[procesador] Thread-140352695645888: opcode=0, dir=1, valor=1
+[procesador] Thread-140352695645888: valor 1 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 0 con val=1
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 362
+[procesador] Thread-140352695645888: FETCH: PC=363, MAR=362, MDR=11100006
+[procesador] Thread-140352695645888: decodificando IR=11100006
+[procesador] Thread-140352695645888: opcode=11, dir=1, valor=6
+[procesador] Thread-140352695645888: valor 6 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 11 con val=6
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 368
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 356
+[procesador] Thread-140352695645888: FETCH: PC=357, MAR=356, MDR=25000000
+[procesador] Thread-140352695645888: decodificando IR=25000000
+[procesador] Thread-140352695645888: opcode=25, dir=0, valor=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 350
+[procesador] Thread-140352695645888: valor 0 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 25 con val=0
+[memoria principal] Thread-140352695645888: escritura exitosa en 369
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 357
+[procesador] Thread-140352695645888: FETCH: PC=358, MAR=357, MDR=4000050
+[procesador] Thread-140352695645888: decodificando IR=4000050
+[procesador] Thread-140352695645888: opcode=4, dir=0, valor=50
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 400
+[procesador] Thread-140352695645888: valor 4 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 4 con val=4
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 358
+[procesador] Thread-140352695645888: FETCH: PC=359, MAR=358, MDR=2100002
+[procesador] Thread-140352695645888: decodificando IR=2100002
+[procesador] Thread-140352695645888: opcode=2, dir=1, valor=2
+[procesador] Thread-140352695645888: valor 2 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 2 con val=2
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 359
+[procesador] Thread-140352695645888: FETCH: PC=360, MAR=359, MDR=5100050
+[procesador] Thread-140352695645888: decodificando IR=5100050
+[procesador] Thread-140352695645888: opcode=5, dir=1, valor=50
+[procesador] Thread-140352695645888: valor 50 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 5 con val=50
+[memoria principal] Thread-140352695645888: escritura exitosa en 400
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 360
+[procesador] Thread-140352695645888: FETCH: PC=361, MAR=360, MDR=26000000
+[procesador] Thread-140352695645888: decodificando IR=26000000
+[procesador] Thread-140352695645888: opcode=26, dir=0, valor=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 350
+[procesador] Thread-140352695645888: valor 0 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 26 con val=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 369
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[manejadorInterrupciones] Thread-140352695645888: interrupcion de reloj
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 361
+[procesador] Thread-140352695645888: FETCH: PC=362, MAR=361, MDR=100001
+[procesador] Thread-140352695645888: decodificando IR=100001
+[procesador] Thread-140352695645888: opcode=0, dir=1, valor=1
+[procesador] Thread-140352695645888: valor 1 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 0 con val=1
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 362
+[procesador] Thread-140352695645888: FETCH: PC=363, MAR=362, MDR=11100006
+[procesador] Thread-140352695645888: decodificando IR=11100006
+[procesador] Thread-140352695645888: opcode=11, dir=1, valor=6
+[procesador] Thread-140352695645888: valor 6 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 11 con val=6
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 368
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 356
+[procesador] Thread-140352695645888: FETCH: PC=357, MAR=356, MDR=25000000
+[procesador] Thread-140352695645888: decodificando IR=25000000
+[procesador] Thread-140352695645888: opcode=25, dir=0, valor=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 350
+[procesador] Thread-140352695645888: valor 0 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 25 con val=0
+[memoria principal] Thread-140352695645888: escritura exitosa en 369
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 357
+[procesador] Thread-140352695645888: FETCH: PC=358, MAR=357, MDR=4000050
+[procesador] Thread-140352695645888: decodificando IR=4000050
+[procesador] Thread-140352695645888: opcode=4, dir=0, valor=50
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 400
+[procesador] Thread-140352695645888: valor 8 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 4 con val=8
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 358
+[procesador] Thread-140352695645888: FETCH: PC=359, MAR=358, MDR=2100002
+[procesador] Thread-140352695645888: decodificando IR=2100002
+[procesador] Thread-140352695645888: opcode=2, dir=1, valor=2
+[procesador] Thread-140352695645888: valor 2 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 2 con val=2
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 359
+[procesador] Thread-140352695645888: FETCH: PC=360, MAR=359, MDR=5100050
+[procesador] Thread-140352695645888: decodificando IR=5100050
+[procesador] Thread-140352695645888: opcode=5, dir=1, valor=50
+[procesador] Thread-140352695645888: valor 50 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 5 con val=50
+[memoria principal] Thread-140352695645888: escritura exitosa en 400
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 360
+[procesador] Thread-140352695645888: FETCH: PC=361, MAR=360, MDR=26000000
+[procesador] Thread-140352695645888: decodificando IR=26000000
+[procesador] Thread-140352695645888: opcode=26, dir=0, valor=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 350
+[procesador] Thread-140352695645888: valor 0 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 26 con val=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 369
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 361
+[procesador] Thread-140352695645888: FETCH: PC=362, MAR=361, MDR=100001
+[procesador] Thread-140352695645888: decodificando IR=100001
+[procesador] Thread-140352695645888: opcode=0, dir=1, valor=1
+[procesador] Thread-140352695645888: valor 1 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 0 con val=1
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 362
+[procesador] Thread-140352695645888: FETCH: PC=363, MAR=362, MDR=11100006
+[procesador] Thread-140352695645888: decodificando IR=11100006
+[procesador] Thread-140352695645888: opcode=11, dir=1, valor=6
+[procesador] Thread-140352695645888: valor 6 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 11 con val=6
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 368
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 356
+[procesador] Thread-140352695645888: FETCH: PC=357, MAR=356, MDR=25000000
+[procesador] Thread-140352695645888: decodificando IR=25000000
+[procesador] Thread-140352695645888: opcode=25, dir=0, valor=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 350
+[procesador] Thread-140352695645888: valor 0 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 25 con val=0
+[memoria principal] Thread-140352695645888: escritura exitosa en 369
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 357
+[procesador] Thread-140352695645888: FETCH: PC=358, MAR=357, MDR=4000050
+[procesador] Thread-140352695645888: decodificando IR=4000050
+[procesador] Thread-140352695645888: opcode=4, dir=0, valor=50
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 400
+[procesador] Thread-140352695645888: valor 16 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 4 con val=16
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 358
+[procesador] Thread-140352695645888: FETCH: PC=359, MAR=358, MDR=2100002
+[procesador] Thread-140352695645888: decodificando IR=2100002
+[procesador] Thread-140352695645888: opcode=2, dir=1, valor=2
+[procesador] Thread-140352695645888: valor 2 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 2 con val=2
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[manejadorInterrupciones] Thread-140352695645888: interrupcion de reloj
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 359
+[procesador] Thread-140352695645888: FETCH: PC=360, MAR=359, MDR=5100050
+[procesador] Thread-140352695645888: decodificando IR=5100050
+[procesador] Thread-140352695645888: opcode=5, dir=1, valor=50
+[procesador] Thread-140352695645888: valor 50 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 5 con val=50
+[memoria principal] Thread-140352695645888: escritura exitosa en 400
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 360
+[procesador] Thread-140352695645888: FETCH: PC=361, MAR=360, MDR=26000000
+[procesador] Thread-140352695645888: decodificando IR=26000000
+[procesador] Thread-140352695645888: opcode=26, dir=0, valor=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 350
+[procesador] Thread-140352695645888: valor 0 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 26 con val=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 369
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 361
+[procesador] Thread-140352695645888: FETCH: PC=362, MAR=361, MDR=100001
+[procesador] Thread-140352695645888: decodificando IR=100001
+[procesador] Thread-140352695645888: opcode=0, dir=1, valor=1
+[procesador] Thread-140352695645888: valor 1 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 0 con val=1
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 362
+[procesador] Thread-140352695645888: FETCH: PC=363, MAR=362, MDR=11100006
+[procesador] Thread-140352695645888: decodificando IR=11100006
+[procesador] Thread-140352695645888: opcode=11, dir=1, valor=6
+[procesador] Thread-140352695645888: valor 6 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 11 con val=6
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 368
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 363
+[procesador] Thread-140352695645888: FETCH: PC=364, MAR=363, MDR=24000000
+[procesador] Thread-140352695645888: decodificando IR=24000000
+[procesador] Thread-140352695645888: opcode=24, dir=0, valor=0
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 350
+[procesador] Thread-140352695645888: valor 0 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 24 con val=0
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 364
+[procesador] Thread-140352695645888: FETCH: PC=365, MAR=364, MDR=4000050
+[procesador] Thread-140352695645888: decodificando IR=4000050
+[procesador] Thread-140352695645888: opcode=4, dir=0, valor=50
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 400
+[procesador] Thread-140352695645888: valor 32 cargado de forma: directo
+[procesador] Thread-140352695645888: ejecutando instrucción 4 con val=32
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 365
+[procesador] Thread-140352695645888: FETCH: PC=366, MAR=365, MDR=100000
+[procesador] Thread-140352695645888: decodificando IR=100000
+[procesador] Thread-140352695645888: opcode=0, dir=1, valor=0
+[procesador] Thread-140352695645888: valor 0 cargado de forma: inmediato
+[procesador] Thread-140352695645888: ejecutando instrucción 0 con val=0
+[procesador] Thread-140352695645888: instruccion ejecutada con: EXITO
+[memoriaPrincipal] Thread-140352695645888: lectura exitosa en 366
+[procesador] Thread-140352695645888: FETCH: PC=367, MAR=366, MDR=-1
+[procesador] Thread-140352695645888: FIN DEL PROGRAMA
+[procesador] Thread-140352695645888: DURMIENDO PROCESADOR
+[Cargador de Programa] Thread-140352695650112: - '2alatanto' FINALIZO de forma EXITOSA
+[Cargador de Programa] Thread-140352695650112: - Resultado (AC): 32
+[DMA] Thread-140352695650112: APAGANDO DMA
+[DMA] Thread-140352695650112: DMA APAGADO
+[procesador] Thread-140352695650112: APAGANDO PROCESADOR
+[procesador] Thread-140352695645888: DESPERTANDO PROCESADOR
+[procesador] Thread-140352695650112: PROCESADOR APAGADO
 === FIN DE SIMULACION ===

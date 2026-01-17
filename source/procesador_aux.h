@@ -11,5 +11,6 @@ int getCondCode(void);
 void setCondCode(int condicion);
 int getOpMode(void);
 void setOpMode(int modo);
+void jmp(int pos);
 
 #endif

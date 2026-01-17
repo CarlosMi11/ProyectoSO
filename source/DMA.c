@@ -1,13 +1,19 @@
 #include "DMA.h"
 
 
-pthread_mutex_t data_dma = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t acceso_dma = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t senal_dma = PTHREAD_COND_INITIALIZER;
+static pthread_mutex_t data_dma = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t acceso_dma = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t senal_dma = PTHREAD_COND_INITIALIZER;
 
-flag dma_pendiente = 0;
-flag dma_trabajando = 0;
-flag finalizar_dma = 0;
+#define DMA_LOCK pthread_mutex_lock(&acceso_dma)
+#define DMA_UNLOCK pthread_mutex_unlock(&acceso_dma)
+
+static pthread_t ID_DMA;
+
+static flag dma_pendiente = 0;
+static flag dma_trabajando = 0;
+static flag finalizar_dma = 0;
+
 flag ESTADOdma = 0;
 
 typedef struct{
@@ -18,7 +24,7 @@ typedef struct{
     int posmem;
 } dma_data; 
 
-dma_data DMA_DATA;
+static dma_data DMA_DATA;
 
 
 
@@ -51,26 +57,28 @@ void* DMA(void *param){
             
             secmemflag = scrd(&dato, local_data.pista, local_data.cilindro, local_data.sector);
 
-            MEM_LOCK;
+            
 
-            primemflag = pmwr(local_data.posmem, dato, 1000000, 0, 2000);
+            primemflag = pmwr(local_data.posmem, dato, KERNEL_MODE);
 
-            MEM_UNLOCK;
+            
 
         }
         else{
-            MEM_LOCK;
+            
 
-            primemflag = pmrd(local_data.posmem, &dato, 1000000, 0, 2000);
+            primemflag = pmrd(local_data.posmem, &dato, KERNEL_MODE);
 
-            MEM_UNLOCK;
+            
 
             secmemflag = scwr(dato, local_data.pista, local_data.cilindro, local_data.sector);
         }
 
         if(primemflag == SUCCESS && secmemflag == SUCCESS)ESTADOdma = SUCCESS;
         else ESTADOdma = FAIL;
-
+        char mensaje[50];
+        sprintf(mensaje, "finalizada tarea de io, ESTADOdma: %s", (ESTADOdma == SUCCESS ? "SUCCESS" : "FAIL"));
+        log_("DMA", mensaje);
         genInterr(4);
 
         DMA_LOCK;
@@ -85,6 +93,7 @@ void DMAON(){
     DMA_LOCK;
     dma_pendiente = 1;
     pthread_cond_signal(&senal_dma);
+    log_("DMA", "encendiendo DMA");
     DMA_UNLOCK;
     
 }
@@ -92,6 +101,9 @@ void DMAON(){
 void set_pista(int pista){
     pthread_mutex_lock(&data_dma);
     DMA_DATA.pista = pista;
+    char mensaje[40];
+    sprintf(mensaje, "colocando pista en %i", pista);
+    log_("DMA", mensaje);
     pthread_mutex_unlock(&data_dma);
 }
 void set_cilindro(int cilindro){
@@ -102,16 +114,40 @@ void set_cilindro(int cilindro){
 void set_sector(int sector){
     pthread_mutex_lock(&data_dma);
     DMA_DATA.sector = sector;
+    char mensaje[40];
+    sprintf(mensaje, "colocando sector en %i", sector);
+    log_("DMA", mensaje);
     pthread_mutex_unlock(&data_dma);
 }
 void set_posmem(int posmem){
     pthread_mutex_lock(&data_dma);
     DMA_DATA.posmem = posmem;
+    char mensaje[40];
+    sprintf(mensaje, "colocando posicion de memoria en %i", posmem);
+    log_("DMA", mensaje);
     pthread_mutex_unlock(&data_dma);
 }
 void set_io(int io){
     pthread_mutex_lock(&data_dma);
     DMA_DATA.io = io;
+    char mensaje[40];
+    sprintf(mensaje, "colocando io en %i", io);
+    log_("DMA", mensaje);
     pthread_mutex_unlock(&data_dma);
 }
 
+void creardma() {
+    log_("DMA", "CREANDO DMA");
+    pthread_create(&ID_DMA, NULL, DMA, NULL);
+    log_("DMA", "DMA CREADO");
+}
+
+void matardma(){
+    log_("DMA", "APAGANDO DMA");
+    DMA_LOCK;
+    finalizar_dma = 1;
+    pthread_cond_signal(&senal_dma);
+    DMA_UNLOCK;
+    pthread_join(ID_DMA, NULL);
+    log_("DMA", "DMA APAGADO");
+}

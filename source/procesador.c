@@ -1,5 +1,9 @@
 #include "procesador.h"
 
+#define CPU_ESPERA   0  
+#define CPU_EJECUTAR_NORMAL   1  
+#define CPU_EJECUTAR_DEBUG  2  
+#define CPU_APAGAR   4  
 
 long MAR = 0;
 long MDR = 0;
@@ -11,28 +15,34 @@ long  SP = 0;
 long PSW = 0;
 long  AC = 0;
 
-pthread_mutex_t mutex_cpu = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t cond_start = PTHREAD_COND_INITIALIZER; 
-pthread_cond_t cond_end   = PTHREAD_COND_INITIALIZER;
+static pthread_mutex_t mutex_cpu = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t cond_start = PTHREAD_COND_INITIALIZER; 
+static pthread_cond_t cond_end   = PTHREAD_COND_INITIALIZER;
 
-int estadoCPU;
+static pthread_t ID_PROC;
+static int estadoCPU;
+
 flag valorFinalizacion;
 flag finalizo;
 
-
+static char mensaje[200];
 
 palabra lectura(int pos, int *flag){
-	MEM_LOCK;
+	
 	palabra leido;
-	*flag = pmrd(pos + RB, &leido, PSW, RB, RL);
-	MEM_UNLOCK;
+
+	if(getOpMode() != 1)pos = pos + RB;
+	  
+	*flag = pmrd(pos, &leido, PSW, RB, RL);
 	return leido;
 }
 
 void escritura(int pos, const palabra value, int *flag){
-	MEM_LOCK;
-	*flag = pmwr(pos + RB, value, PSW, RB, RL);
-	MEM_UNLOCK;
+	
+	if(getOpMode() != 1)pos = pos + RB;
+	  
+	*flag = pmwr(pos, value, PSW, RB, RL);
+	
 }
 
 void fetch(){
@@ -41,19 +51,30 @@ void fetch(){
 
 	MAR = PC;
 
-	pmrd(MAR, &MDR, 1000000, 0, 2000);	//modo admin xd
+	pmrd(MAR, &MDR, KERNEL_MODE);
 
 	PC += 1;
 	setPC(PC);
 	IR = MDR;
+
+	snprintf(mensaje,200, "FETCH: PC=%i, MAR=%li, MDR=%li", PC, MAR, MDR);
+    log_("procesador", mensaje);
 }
 
 Instruccion decode(){
+	snprintf(mensaje,200, "decodificando IR=%ld", IR);
+    log_("procesador", mensaje);
+
 	Instruccion i;
+	
 	i.val = IR % 100000;
 	if ((i.val/10000)==1) i.val = (i.val%10000)*(-1);
 	i.opcode = IR / 1000000;
 	i.dir = (IR / 100000) % 10;
+
+
+	snprintf(mensaje,200, "opcode=%i, dir=%i, valor=%i", i.opcode, i.dir, i.val);
+	log_("procesador", mensaje);
 	return i;
 }
 
@@ -73,7 +94,10 @@ flag MemoryAccess(Instruccion *i){
 	}
 
     i->val = valor;
-
+	snprintf(mensaje,200, "valor %i cargado de forma: %s", 
+		i->val, 
+		(i->dir == 0 ? ("directo") : (i->dir == 1 ? "inmediato" : "indexado")));
+    log_("procesador", mensaje);
     return flagLectura;
 }
 
@@ -84,6 +108,9 @@ flag execute (Instruccion i){
     val = i.val;
 
 	palabra valsp;
+
+	snprintf(mensaje,200, "ejecutando instrucción %i con val=%i", opcode, val);
+    log_("procesador", mensaje);
 
 	flag flagMemoria = SUCCESS;
 	flag flagInstruccion = SUCCESS;
@@ -99,9 +126,11 @@ flag execute (Instruccion i){
                 setCondCode(3); 
                 if (AC > MAX_NUMBER) {
                     AC = MIN_NUMBER + (AC - MAX_NUMBER - 1);
+					genInterr(8);
                 } 
                 else if (AC < MIN_NUMBER) {
                     AC = MAX_NUMBER + (AC - MIN_NUMBER + 1);
+					genInterr(7);
                 }
             }
 			break;
@@ -116,9 +145,11 @@ flag execute (Instruccion i){
                 setCondCode(3); 
                 if (AC > MAX_NUMBER) {
                     AC = MIN_NUMBER + (AC - MAX_NUMBER - 1);
+					genInterr(8);
                 } 
                 else if (AC < MIN_NUMBER) {
                     AC = MAX_NUMBER + (AC - MIN_NUMBER + 1);
+					genInterr(7);
                 }
             }
 			break;
@@ -130,7 +161,12 @@ flag execute (Instruccion i){
 			if (AC>0)  setCondCode(2);
 			if (AC > MAX_NUMBER || AC < MIN_NUMBER) {
                 setCondCode(3); 
-
+				if (AC > MAX_NUMBER) {
+                    genInterr(8);
+                } 
+                else if (AC < MIN_NUMBER) {
+                    genInterr(7);
+                }
                 long relativo = (AC - MIN_NUMBER) % (MAX_NUMBER - MIN_NUMBER + 1);
 
                 if (relativo < 0) {
@@ -178,25 +214,25 @@ flag execute (Instruccion i){
 		case 9: // JMPE			
 			valsp = lectura(SP, &flagMemoria);
             if(flagMemoria == SUCCESS){
-                if (AC == valsp) setPC(val);
+                if (AC == valsp) jmp(val);
             }
 			break;
 		case 10: // JMPNE
 			valsp = lectura(SP, &flagMemoria);
             if(flagMemoria == SUCCESS){
-                if (AC != valsp) setPC(val);
+                if (AC != valsp) jmp(val);
             }
 			break;
 		case 11: // JMPLT
 			valsp = lectura(SP, &flagMemoria);
             if(flagMemoria == SUCCESS){
-                if (AC < valsp) setPC(val);
+                if (AC < valsp) jmp(val);
             }
 			break;	
 		case 12: // JMPGT
 			valsp = lectura(SP, &flagMemoria);
             if(flagMemoria == SUCCESS){
-                if (AC > valsp) setPC(val);
+                if (AC > valsp) jmp(val);
             }
 			break;		
 		case 13: // SVC
@@ -204,7 +240,13 @@ flag execute (Instruccion i){
 			break;	
 		case 14: // RETRN
             //asumo que en SP esta la direccion a donde se debe retornar
+			if(SP - 1 < RX){ // si intenta hacer pop de la base de la pila, no puede
+				flagMemoria = FAIL;
+				break;
+			}
             setPC(lectura(SP, &flagMemoria));
+            SP -= 1;
+            
 			break;	
 		case 15: //HAB
             setInterruptions(1);
@@ -248,11 +290,15 @@ flag execute (Instruccion i){
             escritura(SP, AC, &flagMemoria);
 			break;	
 		case 26: //POP
+			if(SP - 1 < RX){ // si intenta hacer pop de la base de la pila, no puede
+				flagMemoria = FAIL;
+				break;
+			}
             AC = lectura(SP, &flagMemoria);
             SP -= 1;
 			break;	
 		case 27: // J
-			setPC(val);
+			jmp(val);
 			break;	
 		case 28: //SDMAP
             set_pista(val);
@@ -283,10 +329,11 @@ flag execute (Instruccion i){
 		ret = FAIL;
 	}
 	if(flagMemoria == FAIL){
-		genInterr(6);
 		ret = FAIL;
 	}
-
+	
+	snprintf(mensaje, 200, "instruccion ejecutada con: %s", (ret == SUCCESS ? "EXITO" : "ERROR"));
+    log_("procesador", mensaje);
 	return ret;
 	
 }
@@ -298,6 +345,8 @@ flag CicloInstruccion(){
 
 	if(IR == -1){
 		
+    	log_("procesador", "FIN DEL PROGRAMA");
+
 		pthread_mutex_lock(&mutex_cpu);
 		estadoCPU = CPU_ESPERA;
         pthread_cond_signal(&cond_end); 
@@ -311,8 +360,6 @@ flag CicloInstruccion(){
 
 	flag estado_memoria =  MemoryAccess(&instr);
     if (estado_memoria == FAIL) {
-        
-        genInterr(6);
         return FAIL;
     }
     
@@ -324,17 +371,21 @@ void * procesador(void* parametros){
     while(estadoCPU != CPU_APAGAR) {
         
 		pthread_mutex_lock(&mutex_cpu);
-
+		log_("procesador", "DURMIENDO PROCESADOR");
         while (estadoCPU == CPU_ESPERA) { 
             pthread_cond_wait(&cond_start, &mutex_cpu);
         }
-
+		log_("procesador", "DESPERTANDO PROCESADOR");
 		if (estadoCPU == CPU_APAGAR) {
+			
             pthread_mutex_unlock(&mutex_cpu);
             break; 
         }
 
         pthread_mutex_unlock(&mutex_cpu);
+		
+		snprintf(mensaje,200, "INICIANDO PROCESADOR. modo de ejecución: %s", (estadoCPU == CPU_EJECUTAR_NORMAL ? "NORMAL" : "DEBUG"));
+    	log_("procesador", mensaje);
 		limpiarInterrupciones();
 		valorFinalizacion = FAIL;
 		
@@ -371,6 +422,7 @@ void * procesador(void* parametros){
 			}
 		}
 
+
     }
     return NULL;
 }
@@ -390,3 +442,24 @@ void activarProcesador(int modo){
     pthread_mutex_unlock(&mutex_cpu);
 }
 
+void crearProcesador(){
+	log_("procesador", "CREANDO PROCESADOR");
+    estadoCPU = CPU_ESPERA;
+    setReloj(12);
+	pthread_create(&ID_PROC, NULL, procesador, NULL);
+	log_("procesador", "PROCESADOR CREADO");
+
+}
+
+void matarProcesador(){
+	log_("procesador", "APAGANDO PROCESADOR");
+	pthread_mutex_lock(&mutex_cpu);
+    estadoCPU = CPU_APAGAR;
+    
+    pthread_cond_signal(&cond_start);
+    
+    pthread_mutex_unlock(&mutex_cpu);
+
+    pthread_join(ID_PROC, NULL);
+	log_("procesador", "PROCESADOR APAGADO");
+}

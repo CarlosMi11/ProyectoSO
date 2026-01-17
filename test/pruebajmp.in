@@ -1,0 +1,8 @@
+_start 1
+.NumeroPalabras 5
+.NombreProg prueba_jmp
+04100005 //1. cargar 5 en AC
+27100004 //2. jump a la instruccion 4 (el direccionamiento es base-1)
+00110005 //3. sumar -5 (no se deberia ejecutar)
+25000000 //4. push (deberia saltar acá)
+13000000 //5. llamada al sistema (deberia ser codigo 5)

@@ -1,0 +1,16 @@
+_start 1
+.NumeroPalabras 9
+.NombreProg 5mas5
+04100000
+05100051
+28100001 //0. establecer pista en 1
+29100001 //1. establecer cilindro en 1
+30100001 //2. establecer sector en 1
+31100001 //3. establecer en escribir en memoria (input)
+19000000 //4. coloca la direccion del RB en AC
+00100051 //5. suma 51 para obtener la direccion global (el DMA obtiene direcciones globales)
+25000000 //6. push
+23000000 //7. Cargo SP en AC
+32200000 //4. posicion de lectura es la guardada en el tope de pila
+33000000 //5. encender DMA
+04000051 //0. load la posicion 51

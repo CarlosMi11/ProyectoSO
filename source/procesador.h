@@ -20,14 +20,7 @@ typedef struct {
 } Instruccion;
 
 
-void fetch();
-
-Instruccion decode();
-
-int accesoMemoria(Instruccion i);
-
-flag execute (Instruccion i);
-
-void * procesador(void* parametros);
 void activarProcesador(int modo);
+void crearProcesador();
+void matarProcesador();
 #endif

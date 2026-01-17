@@ -1,8 +1,31 @@
 #include "interrupciones.h"
+#include "procesador_data.h"
+#include "logger.h"
 
-pthread_mutex_t acceso_interr = PTHREAD_MUTEX_INITIALIZER;
-VectorInterrupciones v;
-Pila estado;
+static pthread_mutex_t acceso_interr = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t acceso_interr;
+
+#define INTERR_LOCK pthread_mutex_lock(&acceso_interr)
+#define INTERR_UNLOCK pthread_mutex_unlock(&acceso_interr)
+
+typedef struct {
+	int interrupciones[9];
+} VectorInterrupciones;
+
+typedef struct {
+	int MAR;
+	int MDR;
+	int IR;
+	int RB;
+	int RL;
+	int RX;
+	int SP;
+	int PSW;
+	int AC;
+} Pila;
+
+static VectorInterrupciones v;
+static Pila estado;
 
 void guardarEstado(){
 	
@@ -41,9 +64,6 @@ void genInterr(int interr){
 	INTERR_UNLOCK;
 }
 
-//void finalizarPrograma(){
-//	
-//}
 void limpiarInterrupciones(){
 	for(int i = 0; i < 9; i++){
 		v.interrupciones[i] = 0;
@@ -53,9 +73,10 @@ flag manInterr(){
 	INTERR_LOCK;
 	guardarEstado();
 	flag terminar = SUCCESS;
-	char mensaje_svc[100];
+	char mensaje[200];
 	if(v.interrupciones[0]){//codigo de llamada al sistema invalido (terminar el programa)
-		log_("manejadorInterrupciones", "ERROR: codigo de llamada al sistema invalido");
+		snprintf(mensaje, 200, "ERROR: codigo de llamada al sistema invalido (%ld)", AC);
+		log_("manejadorInterrupciones", mensaje); 
 
 		//finalizarPrograma(); //detener programa actual
 		terminar = FAIL;
@@ -67,8 +88,8 @@ flag manInterr(){
 		terminar = FAIL;
 	}
 	if(v.interrupciones[2]){//llamada al sistema
-		snprintf(mensaje_svc, 100, "Llamada al sistema, codigo: %d", AC);
-		log_("manejadorInterrupciones", mensaje_svc); 
+		snprintf(mensaje, 200, "Llamada al sistema, codigo: %ld", AC);
+		log_("manejadorInterrupciones", mensaje); 
 	}
 	if(v.interrupciones[3]){//reloj
 		log_("manejadorInterrupciones", "interrupcion de reloj");
@@ -77,8 +98,8 @@ flag manInterr(){
 		log_("manejadorInterrupciones", "operacion de Entrada/Salida finalizada");
 	}
 	if(v.interrupciones[5]){//instrucción invalida (terminar el programa)
-		snprintf(mensaje_svc, 100, "ERROR: Instruccion invalida %d", IR / 1000000);
-		log_("manejadorInterrupciones", mensaje_svc); 
+		snprintf(mensaje, 200, "ERROR: Instruccion invalida (%ld)", IR / 1000000);
+		log_("manejadorInterrupciones", mensaje); 
 
 		//finalizarPrograma(); //detener programa actual
 		terminar = FAIL;
