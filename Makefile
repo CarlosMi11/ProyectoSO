@@ -1,9 +1,3 @@
-# Makefile para proyecto1 (SO) - genera el ejecutable "so-sim"
-# Uso: make          -> compila
-#       make run      -> compila y ejecuta
-#       make clean    -> elimina objetos y ejecutable
-#       make debug    -> compila con símbolos de depuración
-
 CC := gcc
 CFLAGS := -Wall -Wextra -std=gnu11 -g -pthread
 DEPFLAGS := -MMD -MP
@@ -14,7 +8,7 @@ SRCDIR := source
 OBJDIR := objects
 SRCS := $(addprefix $(SRCDIR)/,DMA.c interrupciones.c logger.c main.c memoriaPrincipal.c memoriaSecundaria.c procesador_aux.c procesador.c reloj.c cargadorDePrograma.c)
 OBJS := $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SRCS))
-TARGET := so-sim
+TARGET := sosim
 
 .PHONY: all clean run debug
 
@@ -34,9 +28,9 @@ run: all
 clean:
 	rm -rf $(OBJDIR) $(TARGET)
 
-# Compilación para depuración (añade -DDEBUG y re-compila)
+
 debug: CFLAGS += -DDEBUG -g
 debug: clean all
 
-# Incluir archivos de dependencias generados por -MMD
+
 -include $(OBJS:.o=.d)
