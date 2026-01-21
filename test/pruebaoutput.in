@@ -1,16 +1,16 @@
 _start 1
 .NumeroPalabras 13
-.NombreProg 5mas5
-04100005 //0. load 5
-00100005 //1. sum 5
-05100050 //2. guardo el valor en la posicion 50
-28100001 //3. establecer pista en 1
-29100001 //4. establecer cilindro en 1
-30100001 //5. establecer sector en 1
-31100000 //6. establecer en leer de memoria (output)
-19000000 //7. coloca la direccion del RB en AC
-00100050 //8. suma 50 para obtener la direccion global (el DMA obtiene direcciones globales)
-25000000 //9. push
-23000000 //10. Cargo SP en AC
-32200000 //11. posicion de lectura es la guardada en el tope de pila
-33000000 //12. encender DMA
+.NombreProg pruebaOutput
+04100005 //1. load 5
+00100005 //2. sum 5
+05100050 //3. guardo el valor en la posicion 50
+28100001 //4. establecer pista en 1
+29100001 //5. establecer cilindro en 1
+30100001 //6. establecer sector en 1
+31100000 //7. establecer en leer de memoria (output)
+19000000 //8. coloca la direccion del RB en AC
+00100050 //9. suma 50 para obtener la direccion global (el DMA obtiene direcciones globales)
+25000000 //10. push
+23000000 //11. Cargo SP en AC
+32200000 //12. posicion de lectura es la guardada en el tope de pila
+33000000 //13. encender DMA

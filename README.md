@@ -54,3 +54,12 @@ El simulador inicia creando instancias de los componentes principales: logger, p
 El procesador simula un CPU simple con instrucciones como load, sum, push, svc, etc. La memoria se divide en principal (acceso rápido) y secundaria (almacenamiento persistente). El DMA facilita transferencias de datos entre memorias sin intervención del CPU. El reloj proporciona sincronización, y el logger registra eventos para análisis.
 
 Los programas de prueba en `test/` demuestran funcionalidades como operaciones aritméticas, bucles, entrada/salida y modos kernel.
+
+### Consideraciones
+
+- **SDMAM**: Instrucción código 32, coloca la dirección de memoria que usará el DMA. Recibe una dirección de memoria global (no relativa a RB), la cual debe ser calculada por el programa (ver `test/pruebainput.in`).
+- **Direcionamiento en modo kernel**: A diferencia de la ejecución en modo usuario, cuando un programa usa el modo kernel, utiliza direcciones globales (ver `test/pruebaModoKernel.in`).
+- **PC**: El valor del PC es siempre una dirección global de memoria.
+- **JMP y sus derivados**: Las funciones de salto utilizan direcciones relativas a RB para calcular la dirección global que se le asignará al PC. Esto sucede en la propia instrucción, de modo que el usuario no utiliza direcciones globales al hacer saltos.
+- **Inicio y fin del código cargado en memoria**: El cargador de programa coloca el código a partir de RB + 1, para que los saltos se realicen base 1 (saltar a 1 es saltar a la primera instrucción).
+- **Instrucciones LOAD y STR**: Instrucciones codigo 04 y codigo 05, como todas las instrucciones pasan por el ciclo de ejecución, para cargar de una dirección de memoria (LOAD) se usa direccionamiento directo (04 0 00050), mientras que para escribir en una dirección de memoria (STR) se usa direccionamiento inmediato (05 1 00050) (ver `test/pruebaciclo.in`).
