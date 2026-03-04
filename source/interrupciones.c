@@ -1,5 +1,6 @@
 #include "interrupciones.h"
-#include "procesador_data.h"
+#include "procesador_aux.h"
+#include "planificador.h"
 #include "logger.h"
 
 static pthread_mutex_t acceso_interr = PTHREAD_MUTEX_INITIALIZER;
@@ -27,7 +28,7 @@ typedef struct {
 static VectorInterrupciones v;
 static Pila estado;
 
-void guardarEstado(){
+static void guardarContexto(){
 	
 	estado.MAR = MAR;
 	estado.MDR = MDR;
@@ -40,7 +41,7 @@ void guardarEstado(){
 	estado.AC = AC;
 }
 
-void restaurarEstado(){	
+static void restaurarContexto(){	
 	
 	MAR = estado.MAR;
 	MDR = estado.MDR;
@@ -53,7 +54,7 @@ void restaurarEstado(){
 	AC = estado.AC;
 }
 
-void genInterr(int interr){
+void genInterr(Interrupcion interr){
 	INTERR_LOCK;
 	if(interr>=0 && interr <=8){
 		v.interrupciones[interr] = 1;
@@ -69,55 +70,147 @@ void limpiarInterrupciones(){
 		v.interrupciones[i] = 0;
 	}
 }
-flag manInterr(){
+flag llamadaInvalida(){
+	string mensaje;
+	snprintf(mensaje, TAM_MENSAJE, "ERROR: codigo de llamada al sistema invalido (%ld)", AC);
+	log_("Manejador Interrupciones", mensaje); 
+	return FAIL;
+	//finalizarPrograma(); //detener programa actual
+};
+flag codInterrInvalido(){
+	log_("Manejador Interrupciones", "ERROR: codigo de interrupción invalido");
+	return FAIL;
+	//finalizarPrograma(); //detener programa actual
+};
+flag llamadaSistema(palabra codigo){
+	string mensaje;
+	snprintf(mensaje, TAM_MENSAJE, "Llamada al sistema, codigo: %ld", AC);
+	log_("Manejador Interrupciones", mensaje); 
+	palabra a;
+	switch(codigo){
+		case 1: //fin proceso
+			
+			pop(&a);
+			
+			
+			matarProceso(PROC_IND, a);
+			return FAIL; //no es un fail, pero se debe planificar... entonces se manda un 1
+
+		case 2: //imprimir por pantalla
+			
+			pop(&a);
+
+			//obtener el nombre de a
+			printf("SO-SIM> %s<< %li\n", getNombreProceso(PROC_IND), a);
+			snprintf(mensaje, TAM_MENSAJE, "Impresion por pantalla: %ld", a);
+			log_("Manejador Interrupciones", mensaje); 
+			return SUCCESS;
+
+		case 3://leer por pantalla
+			printf("SO-SIM> %s>> ", getNombreProceso(PROC_IND));
+			scanf("%li", &estado.AC);
+			snprintf(mensaje, TAM_MENSAJE, "lectura por pantalla: %ld", estado.AC);
+			log_("Manejador Interrupciones", mensaje); 
+			return SUCCESS;
+
+		case 4:
+			
+			pop(&a);
+			dormirProceso(PROC_IND, a);
+			return FAIL;
+
+		default:
+			//codigo de interrupcion invalido (no deberia haber llegado acá)
+			matarProceso(PROC_IND, -1);
+			return FAIL;
+		
+	}
+
+	return SUCCESS;
+};
+flag relojInterr(){
+	log_("Manejador Interrupciones", "interrupcion de reloj");
+	return FAIL;
+};
+flag finIO(){
+	
+	log_("Manejador Interrupciones", "operacion de Entrada/Salida finalizada");
+	return SUCCESS;
+}
+flag instrucInvalida(){
+	string mensaje;
+	snprintf(mensaje,TAM_MENSAJE, "ERROR: Instruccion invalida (%ld)", IR / 1000000);
+	log_("Manejador Interrupciones", mensaje); 
+	
+	return FAIL;
+}
+flag direccInvalida(){
+	log_("Manejador Interrupciones", "ERROR: direccionamiento invalido");
+
+	return FAIL;
+}
+flag underFlow(){
+	log_("Manejador Interrupciones", "WARNING: underflow");
+	return SUCCESS;
+}
+flag overFlow(){
+	log_("Manejador Interrupciones", "WARNING: overflow");
+	return SUCCESS;
+}
+int manInterr(){
+	/*
+	Las interrupciones devuelven:
+		FAIL si hay que hacer un cambio de contexto
+		SUCCESS si no es necesario
+	*/
 	INTERR_LOCK;
-	guardarEstado();
+	guardarContexto();
 	flag terminar = SUCCESS;
-	char mensaje[200];
-	if(v.interrupciones[0]){//codigo de llamada al sistema invalido (terminar el programa)
-		snprintf(mensaje, 200, "ERROR: codigo de llamada al sistema invalido (%ld)", AC);
-		log_("manejadorInterrupciones", mensaje); 
+	
+	
+	//deberian terminar el proceso
+	if(v.interrupciones[0]){
+		terminar |= llamadaInvalida();
+	}
+	if(v.interrupciones[1]){
+		terminar |= codInterrInvalido();
+	}
+	if(v.interrupciones[5]){
+		terminar |= instrucInvalida();
+	}
+	if(v.interrupciones[6]){
+		terminar |= direccInvalida();
+	}
 
-		//finalizarPrograma(); //detener programa actual
-		terminar = FAIL;
+	if(terminar == 1){
+		limpiarInterrupciones();
+		restaurarContexto();
+		matarProceso(PROC_IND,-1);
+		INTERR_UNLOCK;
+		return FAIL;
 	}
-	if(v.interrupciones[1]){//codigo de interrupcion invalido (terminar el programa)
-		log_("manejadorInterrupciones", "ERROR: codigo de interrupción invalido");
 
-		//finalizarPrograma(); //detener programa actual
-		terminar = FAIL;
+	//pueden generar un cambio de contexto
+	if(v.interrupciones[2]){
+		terminar |= llamadaSistema(AC);
 	}
-	if(v.interrupciones[2]){//llamada al sistema
-		snprintf(mensaje, 200, "Llamada al sistema, codigo: %ld", AC);
-		log_("manejadorInterrupciones", mensaje); 
+	if(v.interrupciones[3]){
+		terminar |= relojInterr();
 	}
-	if(v.interrupciones[3]){//reloj
-		log_("manejadorInterrupciones", "interrupcion de reloj");
-	}
-	if(v.interrupciones[4]){//finalizacion E/S
-		log_("manejadorInterrupciones", "operacion de Entrada/Salida finalizada");
-	}
-	if(v.interrupciones[5]){//instrucción invalida (terminar el programa)
-		snprintf(mensaje, 200, "ERROR: Instruccion invalida (%ld)", IR / 1000000);
-		log_("manejadorInterrupciones", mensaje); 
 
-		//finalizarPrograma(); //detener programa actual
-		terminar = FAIL;
+	//extras
+	if(v.interrupciones[4]){
+		terminar |= finIO();
 	}
-	if(v.interrupciones[6]){//direccionamiento invalido (terminar el programa)
-		log_("manejadorInterrupciones", "ERROR: direccionamiento invalido");
+	if(v.interrupciones[7]){
+		terminar |= underFlow();
+	}
+	if(v.interrupciones[8]){
+		terminar |= overFlow();
+	}
 
-		//finalizarPrograma(); //detener programa actual
-		terminar = FAIL;
-	}
-	if(v.interrupciones[7]){//underflow
-		log_("manejadorInterrupciones", "WARNING: underflow");
-	}
-	if(v.interrupciones[8]){//overflow
-		log_("manejadorInterrupciones", "WARNING: overflow");
-	}
 	limpiarInterrupciones();
-	restaurarEstado();
+	restaurarContexto();
 	INTERR_UNLOCK;
 	return terminar;
 }

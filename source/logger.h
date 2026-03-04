@@ -3,7 +3,7 @@
 
 #include "cabecera.h"
 
-#define TAMANO_MAX_LOG 200
+#define TAMANO_MAX_LOG 255
 
 flag log_(char* componente, char* mensaje);
 

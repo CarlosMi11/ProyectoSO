@@ -1,4 +1,5 @@
 #include "procesador.h"
+#include "queue.h"
 
 #define CPU_ESPERA   0  
 #define CPU_EJECUTAR_NORMAL   1  
@@ -14,6 +15,7 @@ long  RX = 0;
 long  SP = 0;
 long PSW = 0;
 long  AC = 0;
+int PROC_IND = 0;
 
 static pthread_mutex_t mutex_cpu = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t cond_start = PTHREAD_COND_INITIALIZER; 
@@ -25,40 +27,24 @@ static int estadoCPU;
 flag valorFinalizacion;
 flag finalizo;
 
-static char mensaje[200];
-
-palabra lectura(int pos, int *flag){
-	
-	palabra leido;
-
-	if(getOpMode() != 1)pos = pos + RB;
-	  
-	*flag = pmrd(pos, &leido, PSW, RB, RL);
-	return leido;
-}
-
-void escritura(int pos, const palabra value, int *flag){
-	
-	if(getOpMode() != 1)pos = pos + RB;
-	  
-	*flag = pmwr(pos, value, PSW, RB, RL);
-	
-}
+static string mensaje;
 
 void fetch(){
 	
 	int PC = getPC();
 
 	MAR = PC;
-
-	pmrd(MAR, &MDR, KERNEL_MODE);
-
+	
+	
+	int flag;
+	MDR = lectura(MAR, &flag);
+	snprintf(mensaje,200, "FETCH: PC=%i, MAR=%li, MDR=%li", PC, MAR, MDR);
+    log_("procesador", mensaje);
 	PC += 1;
 	setPC(PC);
 	IR = MDR;
 
-	snprintf(mensaje,200, "FETCH: PC=%i, MAR=%li, MDR=%li", PC, MAR, MDR);
-    log_("procesador", mensaje);
+	
 }
 
 Instruccion decode(){
@@ -126,11 +112,11 @@ flag execute (Instruccion i){
                 setCondCode(3); 
                 if (AC > MAX_NUMBER) {
                     AC = MIN_NUMBER + (AC - MAX_NUMBER - 1);
-					genInterr(8);
+					genInterr(OVERFLOW);
                 } 
                 else if (AC < MIN_NUMBER) {
                     AC = MAX_NUMBER + (AC - MIN_NUMBER + 1);
-					genInterr(7);
+					genInterr(UNDERFLOW);
                 }
             }
 			break;
@@ -145,11 +131,11 @@ flag execute (Instruccion i){
                 setCondCode(3); 
                 if (AC > MAX_NUMBER) {
                     AC = MIN_NUMBER + (AC - MAX_NUMBER - 1);
-					genInterr(8);
+					genInterr(OVERFLOW);
                 } 
                 else if (AC < MIN_NUMBER) {
                     AC = MAX_NUMBER + (AC - MIN_NUMBER + 1);
-					genInterr(7);
+					genInterr(UNDERFLOW);
                 }
             }
 			break;
@@ -162,10 +148,10 @@ flag execute (Instruccion i){
 			if (AC > MAX_NUMBER || AC < MIN_NUMBER) {
                 setCondCode(3); 
 				if (AC > MAX_NUMBER) {
-                    genInterr(8);
+                    genInterr(OVERFLOW);
                 } 
                 else if (AC < MIN_NUMBER) {
-                    genInterr(7);
+                    genInterr(UNDERFLOW);
                 }
                 long relativo = (AC - MIN_NUMBER) % (MAX_NUMBER - MIN_NUMBER + 1);
 
@@ -228,6 +214,9 @@ flag execute (Instruccion i){
             if(flagMemoria == SUCCESS){
                 if (AC < valsp) jmp(val);
             }
+			snprintf(mensaje, 200, "jmplt con: %li < %li", AC, valsp);
+    		log_("procesador", mensaje);
+			
 			break;	
 		case 12: // JMPGT
 			valsp = lectura(SP, &flagMemoria);
@@ -236,7 +225,11 @@ flag execute (Instruccion i){
             }
 			break;		
 		case 13: // SVC
-			genInterr(2);
+			if(AC < 1 || AC > 4){
+				genInterr(LLAMADAINVALIDA);
+				break;
+			}
+			genInterr(LLAMADASISTEMA);
 			break;	
 		case 14: // RETRN
             //asumo que en SP esta la direccion a donde se debe retornar
@@ -286,16 +279,10 @@ flag execute (Instruccion i){
 			SP = AC;
 			break;	
 		case 25: //PSH
-            SP+=1;
-            escritura(SP, AC, &flagMemoria);
+            flagMemoria = push(AC);
 			break;	
 		case 26: //POP
-			if(SP - 1 < RX){ // si intenta hacer pop de la base de la pila, no puede
-				flagMemoria = FAIL;
-				break;
-			}
-            AC = lectura(SP, &flagMemoria);
-            SP -= 1;
+			flagMemoria = pop(&AC);
 			break;	
 		case 27: // J
 			jmp(val);
@@ -325,7 +312,7 @@ flag execute (Instruccion i){
 
 	flag ret = SUCCESS;
 	if(flagInstruccion == FAIL){
-		genInterr(5);
+		genInterr(INSTRUCCIONINVALIDA);
 		ret = FAIL;
 	}
 	if(flagMemoria == FAIL){
@@ -338,22 +325,26 @@ flag execute (Instruccion i){
 	
 }
 
+flag finalizarPrograma(flag valor){
+	//Hacer todo el protocolo de finalizacion
+	//esto para que los programas que usabamos antes funcionen
+
+	//push del valor de retorno
+	push(valor);
+	
+	//Cargar el valor de AC = 1
+	AC = 1;
+	//llamar al sistema
+	genInterr(LLAMADASISTEMA);
+	return SUCCESS;
+}
 
 flag CicloInstruccion(){
 	
 	fetch(); 
 
 	if(IR == -1){
-		
-    	log_("procesador", "FIN DEL PROGRAMA");
-
-		pthread_mutex_lock(&mutex_cpu);
-		estadoCPU = CPU_ESPERA;
-        pthread_cond_signal(&cond_end); 
-        pthread_mutex_unlock(&mutex_cpu);
-		finalizo = 1;
-		valorFinalizacion = SUCCESS; // unico lugar donde se coloca el valor de finalizacion en SUCCESS
-		return SUCCESS;
+		return finalizarPrograma(SUCCESS);
 	}
 	
     Instruccion instr = decode();
@@ -392,20 +383,20 @@ void * procesador(void* parametros){
 		while(estadoCPU != CPU_ESPERA && estadoCPU != CPU_APAGAR){
 
 			
-			CicloInstruccion();
+			if(!todosDormidos())CicloInstruccion();
 			
 			tick(); 
-
+			int acc = SUCCESS;
 			if (getInterruptions()) {
-				if(manInterr()){
-					pthread_mutex_lock(&mutex_cpu);
-    				estadoCPU = CPU_ESPERA; 
-    				pthread_cond_signal(&cond_end); 
-    				pthread_mutex_unlock(&mutex_cpu);
-					valorFinalizacion = FAIL;
-					finalizo = 1;
-				} // finalizar programa 
+				acc = manInterr();
 			}
+			planificar(acc); //siempre se debe planificar
+			if(cantProc == 0){
+				pthread_mutex_lock(&mutex_cpu);
+				estadoCPU = CPU_ESPERA; 
+				pthread_cond_signal(&cond_end); 
+				pthread_mutex_unlock(&mutex_cpu);
+			}	
 			
 			if (estadoCPU == CPU_EJECUTAR_DEBUG) {
 
@@ -427,13 +418,15 @@ void * procesador(void* parametros){
     return NULL;
 }
 
-void activarProcesador(int modo){
+void activarProcesador(){
+	cargarPlanificador(); //se activa el planificador
+	setReloj(QUANTUM);
 	pthread_mutex_lock(&mutex_cpu);
 
-    estadoCPU = modo; 
+    estadoCPU = CPU_EJECUTAR_NORMAL; 
 
     pthread_cond_signal(&cond_start);
-
+	
 	
     while (estadoCPU != CPU_ESPERA && estadoCPU != CPU_APAGAR) {
         pthread_cond_wait(&cond_end, &mutex_cpu);
@@ -445,7 +438,8 @@ void activarProcesador(int modo){
 void crearProcesador(){
 	log_("procesador", "CREANDO PROCESADOR");
     estadoCPU = CPU_ESPERA;
-    setReloj(12);
+    setReloj(QUANTUM);
+	crearPlanificador();
 	pthread_create(&ID_PROC, NULL, procesador, NULL);
 	log_("procesador", "PROCESADOR CREADO");
 

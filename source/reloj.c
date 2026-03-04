@@ -3,7 +3,7 @@
 
 static int TIEMPO;
 
-
+int QUANTUM = 2;
 flag setReloj(int tiempo){
     if(tiempo < 1){
         return FAIL;
@@ -19,8 +19,8 @@ int getReloj(){
 void tick(){
     TIEMPO -= 1;
     if(TIEMPO <= 0){
-        genInterr(3);
-        TIEMPO = 12;
+        genInterr(RELOJINTERR);
+        TIEMPO = QUANTUM;
         
     }
 }

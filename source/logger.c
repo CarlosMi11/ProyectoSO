@@ -6,15 +6,29 @@ static pthread_mutex_t logmutex = PTHREAD_MUTEX_INITIALIZER;
 #define LOG_UNLOCK pthread_mutex_unlock(&logmutex)
 
 #define DIRECCIONDELOG "LOG.log"
-
+const char* puntos = "......................"; 
 flag log_(char* componente, char* mensaje){
+
+    
+
+    // Dentro de log_...
+    int lenComp = strlen(componente);
+    int numPuntos = 24 - lenComp;
+    if (numPuntos < 0) numPuntos = 0;
+
+    
     if (mensaje == NULL || componente == NULL) return FAIL;
     
     pthread_t id = pthread_self();
 
     char mensajeFinal[TAMANO_MAX_LOG];
-
-    int n = snprintf(mensajeFinal, TAMANO_MAX_LOG, "[%s] Thread-%lu: %s\n", componente, (unsigned long)id, mensaje);
+    int n;
+    if(SHOW_THREAD_ID) {
+        n = snprintf(mensajeFinal, TAMANO_MAX_LOG, "[%s%.*s] Thread-%-10lu: %s\n", componente, numPuntos, puntos,(unsigned long)id, mensaje);
+        
+    } else {
+        n = snprintf(mensajeFinal, TAMANO_MAX_LOG, "[%s%.*s]: %s\n", componente, numPuntos, puntos, mensaje);
+    }
     if (n < 0 || n >= TAMANO_MAX_LOG) return FAIL;
 
     LOG_LOCK;

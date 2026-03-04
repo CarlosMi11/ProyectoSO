@@ -6,11 +6,13 @@ LDFLAGS := -pthread
 
 SRCDIR := source
 OBJDIR := objects
-SRCS := $(addprefix $(SRCDIR)/,DMA.c interrupciones.c logger.c main.c memoriaPrincipal.c memoriaSecundaria.c procesador_aux.c procesador.c reloj.c cargadorDePrograma.c)
+# Discover all .c sources in the source directory
+SRCS := $(wildcard $(SRCDIR)/*.c)
+# Place object files under $(OBJDIR) preserving filenames
 OBJS := $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SRCS))
 TARGET := sosim
 
-.PHONY: all clean run debug
+.PHONY: all clean run debug silence
 
 all: $(TARGET)
 
@@ -18,12 +20,16 @@ $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
-	@mkdir -p $(OBJDIR)
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 run: all
 	@echo "Ejecutando $(TARGET)..."
 	@./$(TARGET)
+
+silence:
+	@$(MAKE) all CFLAGS="$(filter-out -Wall -Wextra,$(CFLAGS))"
+	clear
 
 clean:
 	rm -rf $(OBJDIR) $(TARGET)

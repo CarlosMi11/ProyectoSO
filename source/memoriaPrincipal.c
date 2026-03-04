@@ -11,9 +11,9 @@ static pthread_mutex_t acceso_memoria = PTHREAD_MUTEX_INITIALIZER;
 
 int pmrd(int pos, palabra* value, const int PSW, const int RB, const int RL){
     
-    char mensaje[200];
+    string mensaje;
     if((pos < RB || pos >= RL || pos < 300) && (PSW/1000000)%10 != 1){
-        genInterr(6);
+        genInterr(DIRECCIONINVALIDA);
         
         snprintf(mensaje, 200, 
             "ERROR: intento de lectura en %i con RB=%d y RL=%d y modo de operacion=%i", 
@@ -27,15 +27,15 @@ int pmrd(int pos, palabra* value, const int PSW, const int RB, const int RL){
     *value = ram[pos];
     MEM_UNLOCK;
 
-    snprintf(mensaje, 200, "lectura exitosa en %i", pos);
+    snprintf(mensaje, 200, "lectura exitosa en %i, valor=%li", pos, *value);
     log_("memoriaPrincipal", mensaje);
     return SUCCESS;
 }
 
 int pmwr(int pos, palabra value, const int PSW, const int RB, const int RL){
-    char mensaje[200];
+    string mensaje;
     if((pos < RB || pos >= RL || pos < 300) && (PSW/1000000)%10 != 1){
-        genInterr(6);
+        genInterr(DIRECCIONINVALIDA);
         
         snprintf(mensaje, 200, 
             "ERROR: intento de escritura en %i con RB=%d y RL=%d y modo de operacion=%i", 
@@ -49,7 +49,7 @@ int pmwr(int pos, palabra value, const int PSW, const int RB, const int RL){
     MEM_UNLOCK;
 
 
-    snprintf(mensaje, 200, "escritura exitosa en %i", pos);
+    snprintf(mensaje, 200, "escritura exitosa en %i, valor=%li", pos, value);
     log_("memoria principal", mensaje);
     return SUCCESS;
 }

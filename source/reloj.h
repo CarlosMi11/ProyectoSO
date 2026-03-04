@@ -10,5 +10,5 @@ flag setReloj(int tiempo);
 int getReloj();
 
 void tick();
-
+extern int QUANTUM;
 #endif

@@ -3,14 +3,30 @@
 
 #include "cabecera.h"
 
+typedef enum {
+    NUEVO,        
+    LISTO,      
+    EJECUTANDO,    
+    DORMIDO,    
+    FINALIZADO  
+} EstadoProceso;
+
 typedef struct {
-    long psw;
-    long sp;
-    long rx;
-    long rb;
-    long rl;
-    int modoEjec;
-    char nombre[50];
+    long MAR;
+    long MDR;
+    long IR;
+    long RB;
+    long RL;
+    long RX;
+    long SP;
+    long PSW;
+    long AC;
+    long valorFinalizacion;
+    long tiempoDeDormido;
+    string idProceso;
+    EstadoProceso estado;
 } proceso;
+
+
 
 #endif

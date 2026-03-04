@@ -10,7 +10,8 @@ extern long  RL;
 extern long  RX;
 extern long  SP;
 extern long PSW;
-extern long  AC; 
+extern long  AC;
+extern int PROC_IND;
 
 extern flag valorFinalizacion;
 extern flag finalizo;

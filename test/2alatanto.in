@@ -1,0 +1,21 @@
+_start 1
+.NumeroPalabras 18
+.NombreProg 2alatanto
+04100003 //1. load de codigo de llamada al sistema (lectura)
+13000000 //2. llamada al sistema 
+25000000 //3. push del limite superior
+04100001 //4. load valor multiplicado
+05100050 //5. guardo el valor en la posicion 50
+04100000 //6. load 0 (iterador)
+25000000 //7. push del iterador (inicio del bucle)
+04000050 //8. load valor multiplicado
+02100002 //9. multiplico por 2
+05100050 //10. guardo de nuevo el valor
+26000000 //11. pop del iterador
+00100001 //12. sum 1 a AC
+11100007 //13. jumplt hacia el inicio del bucle (si iterador < limite superior)
+26000000 //14. pop del limite superior 
+04000050 //15. load valor multiplicado
+25000000 //16. push del valor multiplicado
+04100002 //17. load de codigo de llamada al sistema (Escritura)
+13000000 //18. llamada al sistema

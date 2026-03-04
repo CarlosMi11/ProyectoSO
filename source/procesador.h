@@ -7,7 +7,7 @@
 #include "reloj.h"
 #include "logger.h"
 #include "interrupciones.h"
-#include "proceso.h"
+#include "planificador.h"
 
 #define MAX_NUMBER 9999999
 #define MIN_NUMBER -9999999
@@ -20,7 +20,7 @@ typedef struct {
 } Instruccion;
 
 
-void activarProcesador(int modo);
+void activarProcesador();
 void crearProcesador();
 void matarProcesador();
 #endif

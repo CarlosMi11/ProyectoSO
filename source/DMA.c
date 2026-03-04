@@ -76,10 +76,10 @@ void* DMA(void *param){
 
         if(primemflag == SUCCESS && secmemflag == SUCCESS)ESTADOdma = SUCCESS;
         else ESTADOdma = FAIL;
-        char mensaje[50];
+        string mensaje;
         sprintf(mensaje, "finalizada tarea de io, ESTADOdma: %s", (ESTADOdma == SUCCESS ? "SUCCESS" : "FAIL"));
         log_("DMA", mensaje);
-        genInterr(4);
+        genInterr(FINIO);
 
         DMA_LOCK;
         dma_trabajando = 0;
@@ -101,7 +101,7 @@ void DMAON(){
 void set_pista(int pista){
     pthread_mutex_lock(&data_dma);
     DMA_DATA.pista = pista;
-    char mensaje[40];
+    string mensaje;
     sprintf(mensaje, "colocando pista en %i", pista);
     log_("DMA", mensaje);
     pthread_mutex_unlock(&data_dma);
@@ -114,7 +114,7 @@ void set_cilindro(int cilindro){
 void set_sector(int sector){
     pthread_mutex_lock(&data_dma);
     DMA_DATA.sector = sector;
-    char mensaje[40];
+    string mensaje;
     sprintf(mensaje, "colocando sector en %i", sector);
     log_("DMA", mensaje);
     pthread_mutex_unlock(&data_dma);
@@ -122,7 +122,7 @@ void set_sector(int sector){
 void set_posmem(int posmem){
     pthread_mutex_lock(&data_dma);
     DMA_DATA.posmem = posmem;
-    char mensaje[40];
+    string mensaje;
     sprintf(mensaje, "colocando posicion de memoria en %i", posmem);
     log_("DMA", mensaje);
     pthread_mutex_unlock(&data_dma);
@@ -130,7 +130,7 @@ void set_posmem(int posmem){
 void set_io(int io){
     pthread_mutex_lock(&data_dma);
     DMA_DATA.io = io;
-    char mensaje[40];
+    string mensaje;
     sprintf(mensaje, "colocando io en %i", io);
     log_("DMA", mensaje);
     pthread_mutex_unlock(&data_dma);

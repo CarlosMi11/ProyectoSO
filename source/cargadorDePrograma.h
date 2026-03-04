@@ -2,7 +2,8 @@
 #define PROGRAMLOADER
 #include "procesador.h"
 #include "logger.h"
+#include "planificador.h"
 
-void Ejecutar(char *nombreArchivo, int modo);
+flag Ejecutar(char *primerArchivo);
 
 #endif
