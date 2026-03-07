@@ -1,6 +1,6 @@
 #include "procesador_aux.h"
 #include "memoriaPrincipal.h"
-
+#include "interrupciones.h"
 #define PC_SHIFT 100000
 
 
@@ -11,6 +11,7 @@ palabra lectura(int pos, int *flag){
 	if(getOpMode() != 1)pos = pos + RB;
 	  
 	*flag = pmrd(pos, &leido, PSW, RB, RL);
+    if(*flag == FAIL)genInterr(DIRECCIONINVALIDA); //generamos la interrupción acá para que la memoria no genere interrupciones de procesos que no estan en ejecucion
 	return leido;
 }
 
@@ -19,7 +20,7 @@ void escritura(int pos, const palabra value, int *flag){
 	if(getOpMode() != 1)pos = pos + RB;
 	  
 	*flag = pmwr(pos, value, PSW, RB, RL);
-	
+	if(*flag == FAIL)genInterr(DIRECCIONINVALIDA);
 }
 
 int getPC(){

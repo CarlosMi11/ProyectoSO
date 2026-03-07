@@ -1,16 +1,13 @@
 _start 1
-.NumeroPalabras 11
+.NumeroPalabras 10
 .NombreProg pruebaInput
-04100000
-05100051
 28100001 //1. establecer pista en 1
 29100001 //2. establecer cilindro en 1
 30100001 //3. establecer sector en 1
 31100001 //4. establecer en escribir en memoria (input)
-19000000 //5. coloca la direccion del RB en AC
-00100051 //6. suma 51 para obtener la direccion global (el DMA obtiene direcciones globales)
-25000000 //7. push
-23000000 //8. Cargo SP en AC
-32200000 //9. posicion de lectura es la guardada en el tope de pila
-33000000 //10. encender DMA
-04000051 //11. load la posicion 51
+32100051 //5. coloca la direccion del RB en AC
+33000000 //6. encender DMA
+04000051 //7. load la posicion 51
+25000000 //8. push del valor
+04100002 //9. load de codigo de llamada al sistema (Escritura)
+13000000 //10. llamada al sistema

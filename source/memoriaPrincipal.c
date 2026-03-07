@@ -13,7 +13,7 @@ int pmrd(int pos, palabra* value, const int PSW, const int RB, const int RL){
     
     string mensaje;
     if((pos < RB || pos >= RL || pos < 300) && (PSW/1000000)%10 != 1){
-        genInterr(DIRECCIONINVALIDA);
+        
         
         snprintf(mensaje, 200, 
             "ERROR: intento de lectura en %i con RB=%d y RL=%d y modo de operacion=%i", 
@@ -35,7 +35,7 @@ int pmrd(int pos, palabra* value, const int PSW, const int RB, const int RL){
 int pmwr(int pos, palabra value, const int PSW, const int RB, const int RL){
     string mensaje;
     if((pos < RB || pos >= RL || pos < 300) && (PSW/1000000)%10 != 1){
-        genInterr(DIRECCIONINVALIDA);
+        
         
         snprintf(mensaje, 200, 
             "ERROR: intento de escritura en %i con RB=%d y RL=%d y modo de operacion=%i", 

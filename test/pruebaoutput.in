@@ -1,5 +1,5 @@
 _start 1
-.NumeroPalabras 13
+.NumeroPalabras 9
 .NombreProg pruebaOutput
 04100005 //1. load 5
 00100005 //2. sum 5
@@ -8,9 +8,5 @@ _start 1
 29100001 //5. establecer cilindro en 1
 30100001 //6. establecer sector en 1
 31100000 //7. establecer en leer de memoria (output)
-19000000 //8. coloca la direccion del RB en AC
-00100050 //9. suma 50 para obtener la direccion global (el DMA obtiene direcciones globales)
-25000000 //10. push
-23000000 //11. Cargo SP en AC
-32200000 //12. posicion de lectura es la guardada en el tope de pila
-33000000 //13. encender DMA
+32100050 //8. coloco direccion de memoria en 50
+33000000 //9. encender DMA

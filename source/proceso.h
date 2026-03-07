@@ -2,7 +2,7 @@
 #define PROCESS
 
 #include "cabecera.h"
-
+#include "DMA.h"
 typedef enum {
     NUEVO,        
     LISTO,      
@@ -24,9 +24,9 @@ typedef struct {
     long valorFinalizacion;
     long tiempoDeDormido;
     string idProceso;
+    solicitudIO IO_DATA;
     EstadoProceso estado;
 } proceso;
-
 
 
 #endif

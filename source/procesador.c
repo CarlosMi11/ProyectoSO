@@ -1,4 +1,5 @@
 #include "procesador.h"
+
 #include "queue.h"
 
 #define CPU_ESPERA   0  
@@ -16,7 +17,7 @@ long  SP = 0;
 long PSW = 0;
 long  AC = 0;
 int PROC_IND = 0;
-
+solicitudIO IO_DATA;
 static pthread_mutex_t mutex_cpu = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t cond_start = PTHREAD_COND_INITIALIZER; 
 static pthread_cond_t cond_end   = PTHREAD_COND_INITIALIZER;
@@ -288,22 +289,23 @@ flag execute (Instruccion i){
 			jmp(val);
 			break;	
 		case 28: //SDMAP
-            set_pista(val);
+            IO_DATA.pista = val;
 			break;	
 		case 29: //SDMAC
-            set_cilindro(val);
+            IO_DATA.cilindro = val;
 			break;	
 		case 30: //SDMAS
-            set_sector(val);
+            IO_DATA.sector = val;
 			break;	
 		case 31: //SDMAIO
-            set_io(val);
+            IO_DATA.io = val;
 			break;	
 		case 32: //SDMAM
-            set_posmem(val);
+            IO_DATA.posmem = RB + val;
 			break;	
 		case 33: //SDMAON
-            DMAON();
+            //DMAON();
+			colocarSolicitudDeIO(0, PROC_IND);
 			break;																		
 		default:
 			flagInstruccion = FAIL;

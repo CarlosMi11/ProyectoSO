@@ -4,7 +4,6 @@
 #include "logger.h"
 
 static pthread_mutex_t acceso_interr = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t acceso_interr;
 
 #define INTERR_LOCK pthread_mutex_lock(&acceso_interr)
 #define INTERR_UNLOCK pthread_mutex_unlock(&acceso_interr)
@@ -107,10 +106,7 @@ flag llamadaSistema(palabra codigo){
 			return SUCCESS;
 
 		case 3://leer por pantalla
-			printf("SO-SIM> %s>> ", getNombreProceso(PROC_IND));
-			scanf("%li", &estado.AC);
-			snprintf(mensaje, TAM_MENSAJE, "lectura por pantalla: %ld", estado.AC);
-			log_("Manejador Interrupciones", mensaje); 
+			colocarSolicitudDeIO(1, PROC_IND);
 			return SUCCESS;
 
 		case 4:
@@ -133,7 +129,11 @@ flag relojInterr(){
 	return FAIL;
 };
 flag finIO(){
-	
+	int idProc;
+	int lectura;
+	flag operacion = get_resultado(&idProc, &lectura);
+	terminarIO(operacion, idProc, lectura);
+	//printf("INTERRUPCIONES: idProc = %i, lectura = %i, operacion = %i\n", idProc, lectura, operacion);
 	log_("Manejador Interrupciones", "operacion de Entrada/Salida finalizada");
 	return SUCCESS;
 }
@@ -164,7 +164,7 @@ int manInterr(){
 		SUCCESS si no es necesario
 	*/
 	INTERR_LOCK;
-	guardarContexto();
+	
 	flag terminar = SUCCESS;
 	
 	
@@ -184,7 +184,6 @@ int manInterr(){
 
 	if(terminar == 1){
 		limpiarInterrupciones();
-		restaurarContexto();
 		matarProceso(PROC_IND,-1);
 		INTERR_UNLOCK;
 		return FAIL;
@@ -210,7 +209,7 @@ int manInterr(){
 	}
 
 	limpiarInterrupciones();
-	restaurarContexto();
+	
 	INTERR_UNLOCK;
 	return terminar;
 }

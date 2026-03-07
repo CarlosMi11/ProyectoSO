@@ -26,6 +26,7 @@ void guardarContexto(){
 	PROCESOS[PROC_IND].SP = SP;
 	PROCESOS[PROC_IND].PSW = PSW;
 	PROCESOS[PROC_IND].AC = AC;
+    PROCESOS[PROC_IND].IO_DATA = IO_DATA;
 }
 
 void restaurarContexto(){	
@@ -39,6 +40,7 @@ void restaurarContexto(){
 	SP  = PROCESOS[PROC_IND].SP;
 	PSW = PROCESOS[PROC_IND].PSW;
 	AC  = PROCESOS[PROC_IND].AC;
+    IO_DATA = PROCESOS[PROC_IND].IO_DATA;
 }
 
 void cargarProcesoEnMemoria(proceso *proces, int pista, int cilindro, int sector){
@@ -123,14 +125,15 @@ void dormirProceso(int indProc, int tiempo){
 
     //Este caso tampoco deberia ocurrir... pero porsialasmoscas
     if(PROCESOS[indProc].estado == LISTO){
-        for(int i = LISTOq.inicio; i < LISTOq.final; i = (i+1)%20){
+        int i = LISTOq.inicio;
+        for(int count = 0; count < LISTOq.cantidad; count++){
             if(LISTOq.cola[i] == indProc){
                 eliminarDeCola(&LISTOq, i);
                 break;
             }
+            i = (i + 1) % 20; 
         }
     }
-
     //ahora si, lo duermo
     PROCESOS[indProc].tiempoDeDormido = tiempo;
     colaInsertar(&DORMIDOq, indProc);
@@ -145,11 +148,13 @@ flag despertarProceso(int indProc, int ind){
     }
     //si no me dieron el indice, lo busco
     if(ind == -1){
-        for(int i = DORMIDOq.inicio; i < DORMIDOq.final; i = (i+1)%20){
-        int indiceDelProceso = DORMIDOq.cola[i];
+        int i = DORMIDOq.inicio;
+        for(int count = 0; count < DORMIDOq.cantidad; count++){
+            int indiceDelProceso = DORMIDOq.cola[i];
             if(indProc == indiceDelProceso){
                 ind = i;
             }
+            i = (i + 1) % 20; 
         }
     }
     if(ind == -1){ //si aun asi no está, retorno FAIL
@@ -173,11 +178,13 @@ void matarProceso(int indProc, int valorFinalizacion){
     }
     //Este caso tampoco deberia ocurrir... pero porsialasmoscas
     if(PROCESOS[indProc].estado == LISTO){
-        for(int i = LISTOq.inicio; i < LISTOq.final; i = (i+1)%20){
+        int i = LISTOq.inicio;
+        for(int count = 0; count < LISTOq.cantidad; count++){
             if(LISTOq.cola[i] == indProc){
                 eliminarDeCola(&LISTOq, i);
                 break;
             }
+            i = (i + 1) % 20; 
         }
     }
     //ahora si, lo mato (no está en ninguna cola y le cambio el estado a FINALIZADO para que al planificar no lo inserten en listo)
@@ -191,22 +198,91 @@ void matarProceso(int indProc, int valorFinalizacion){
     cantProc-=1;
 }
 void restarContadoresDeSleep(){
-    for(int i = DORMIDOq.inicio; i < DORMIDOq.final; i = (i+1)%20){
+    int i = DORMIDOq.inicio;
+    
+    
+    int elementosAEvaluar = DORMIDOq.cantidad; 
+
+    for(int count = 0; count < elementosAEvaluar; count++){
         int indiceDelProceso = DORMIDOq.cola[i];
+        
         if(PROCESOS[indiceDelProceso].tiempoDeDormido > 1){
             PROCESOS[indiceDelProceso].tiempoDeDormido -= 1;
+            
+            
+            i = (i + 1) % 20; 
         }
         else if(PROCESOS[indiceDelProceso].tiempoDeDormido == 1){
             PROCESOS[indiceDelProceso].tiempoDeDormido = 0;
-            despertarProceso(indiceDelProceso, i);
+            despertarProceso(indiceDelProceso, i); 
+        }
+        else {
+            i = (i + 1) % 20; 
         }
     }
+}
+void siguienteOpIO(){
+    
+    if(dmaOcupado() == 1)return;
+
+    int i = DORMIDOq.inicio;
+    for(int count = 0; count < DORMIDOq.cantidad; count++){
+        int indiceDelProceso = DORMIDOq.cola[i];
+        proceso *actual = &PROCESOS[indiceDelProceso];
+
+        if(actual->tiempoDeDormido == -1){
+            set_id_proc(indiceDelProceso);
+            set_nombre_proc(actual->idProceso);
+            if(actual->IO_DATA.consola == 0){
+                set_I_consola(0); //no es lectura por consola
+                set_cilindro(actual->IO_DATA.cilindro);
+                set_pista(actual->IO_DATA.pista);
+                set_sector(actual->IO_DATA.sector);
+                set_io(actual->IO_DATA.io);
+                set_posmem(actual->IO_DATA.posmem);   
+            }
+            else{
+                set_I_consola(1); //es lectura por consola
+                
+            }
+            DMAON();
+            break;
+        
+        }
+        i = (i + 1) % 20; 
+    }
+    
+}
+void terminarIO(flag operacion, int idProc, int lectura){
+    //printf("PLANIFICADOR: idProc = %i, lectura = %i, operacion = %i\n", idProc, lectura, operacion);
+    //printf("PLANIFICADOR: nombreProc = %s, consola = %i\n", PROCESOS[idProc].idProceso, PROCESOS[idProc].IO_DATA.consola );
+    if(PROCESOS[idProc].estado != DORMIDO)return; //no deberia pasar pero porsia
+    
+    if(PROCESOS[idProc].IO_DATA.consola == 1){
+        PROCESOS[idProc].AC = lectura;
+    }
+    despertarProceso(idProc, -1);
+    if(operacion == FAIL){//el proceso pidio una operacion invalida (acceso a memoria invalido)
+        matarProceso(idProc, -1);
+    }
+}
+void colocarSolicitudDeIO(int consola, int idProc){
+    PROCESOS[idProc].IO_DATA.consola = consola; 
+    
+    
+    if(idProc == PROC_IND) {
+        IO_DATA.consola = consola; 
+    }
+    
+
+    dormirProceso(idProc, -1); //
 }
 
 flag planificar(flag codigo){
     string mensaje;
     restarContadoresDeSleep();
-
+    siguienteOpIO();
+    if(PROCESOS[PROC_IND].estado == DORMIDO)codigo = FAIL; //para que si el proceso actual se acosto a dormir, se planifique
     if(codigo == FAIL){//codigo FAIL indica cambio de contexto
         setReloj(QUANTUM); 
         guardarContexto();
@@ -222,7 +298,7 @@ flag planificar(flag codigo){
 
         //colocar al siguiente        
         int indSig = colaExtraer(&LISTOq); 
-
+        if(indSig == -1)return SUCCESS;
         PROC_IND = indSig;
         restaurarContexto();
         PROCESOS[PROC_IND].estado = EJECUTANDO;

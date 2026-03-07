@@ -55,10 +55,28 @@ int main(){
             reiniciarPlanificador();
         }
         else if (strcmp(token, "memstat") == 0){
-            
+            for (int i = 0; i < maxProc; ++i)
+            {
+                printf("Programa Asociado: %s\n", PROCESOS[i].idProceso);
+                printf("Porcentaje en Memoria: %d\n", ((PROCESOS[i].RL-PROCESOS[i].RB)*100/2000));
+                printf("\n");
+            }
         }
         else if (strcmp(token, "ps") == 0){
-            
+            for (int i = 0; i < maxProc; ++i)
+            {
+                printf("ID del Proceso: %d\n", i);
+                switch(PROCESOS[i].estado){
+                    case NUEVO:      printf("Estado del Proceso: NUEVO\n"); break;
+                    case LISTO:      printf("Estado del Proceso: LISTO\n"); break;
+                    case EJECUTANDO: printf("Estado del Proceso: EJECUTANDO\n"); break;
+                    case DORMIDO:    printf("Estado del Proceso: DORMIDO\n"); break;
+                    case FINALIZADO: printf("Estado del Proceso: FINALIZADO\n"); break;
+                }
+                printf("Porcentaje en Memoria: %d\n", ((PROCESOS[i].RL-PROCESOS[i].RB)*100/2000));
+                printf("Programa Asociado: %s\n", PROCESOS[i].idProceso);
+                printf("\n");
+            }
         }
         else{
             printf("Comando desconocido: %s\n", token);
